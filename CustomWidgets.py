@@ -5,6 +5,7 @@ https://stackoverflow.com/questions/16820520/tkinter-canvas-create-window
 """
 import tkinter as tk
 from tkinter import ttk
+from CustomStyle import *
 
 
 class ScrollableText(tk.Text):
@@ -12,8 +13,8 @@ class ScrollableText(tk.Text):
         super().__init__(parent, *args, **kwargs)
 
         self.config(font=("TkDefaultFont", 13),
-                    foreground="#5c616c",
-                    highlightcolor="#5294e2",
+                    foreground=MID_BG,
+                    highlightcolor=HIGHLIGHT_BG,
                     highlightthickness=1
                     )
 
@@ -26,9 +27,9 @@ class ScrollableText(tk.Text):
 class DisplayOnlyText(tk.Text):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.config(background="#f2f4f5",
-                    foreground="#5c616c",
-                    highlightcolor="#5294e2",
+        self.config(background=TEXT_BG,
+                    foreground=MID_BG,
+                    highlightcolor=HIGHLIGHT_BG,
                     highlightthickness=1
                     )
 

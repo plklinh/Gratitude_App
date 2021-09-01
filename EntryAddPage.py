@@ -1,14 +1,10 @@
+from CustomWidgets import ScrollableFrame, DisplayOnlyText
+from ttkthemes import ThemedStyle
+from tkinter import PhotoImage, ttk
 import tkinter as tk
 from tkinter import ttk
 from CustomWidgets import ScrollableText, ScrollableFrame
-
-SMALL_BUTTON_WIDTH = 1
-BIG_BUTTON_WIDTH = 10
-
-SMALL_PAD = 2.5
-LARGE_PAD = 10
-
-LABEL_FONT = ('TkDefaultFont', 13, 'bold')
+from CustomStyle import *
 
 
 class AddEntryPage(ttk.Frame):
