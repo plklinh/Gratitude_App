@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import sqlite3
 
-DB_FILE = "Data_personal/Grat_Database.db"
+DB_FILE = "Data_personal/GratitudeDatabase.db"
 
 ENTRY_TBL = "Entries"
 
@@ -36,13 +36,12 @@ def read_all_entries():
 
 def read_all_plans():
     conn = connect_db()
-    plan_df = pd.read_sql("SELECT * from " + ENTRY_TBL,
+    plan_df = pd.read_sql("SELECT * from " + PLAN_TBL,
                           conn,
-                          index_col="Entry_ID",
+                          index_col="Plan_ID",
                           parse_dates=["Date_created", "Date_completed"])
-    step_df = pd.read_sql("SELECT * from " + ENTRY_TBL,
+    step_df = pd.read_sql("SELECT * from " + STEPS_TBL,
                           conn,
-                          index_col="Entry_ID",
                           parse_dates=["Date_completed"])
     conn.close()
     return plan_df, step_df
