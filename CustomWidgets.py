@@ -2,6 +2,7 @@
 Credit: 
 https://blog.teclado.com/tkinter-scrollable-frames/
 https://stackoverflow.com/questions/16820520/tkinter-canvas-create-window
+https://stackoverflow.com/questions/46081798/automatically-resize-text-widgets-height-to-fit-all-text
 """
 import tkinter as tk
 from tkinter import ttk
@@ -32,6 +33,12 @@ class DisplayOnlyText(tk.Text):
                     highlightcolor=HIGHLIGHT_BG,
                     highlightthickness=1
                     )
+        self.bind("<Configure>", self.reset_height)
+
+    def reset_height(self, e):
+        height = self.tk.call(
+            (self._w, "count", "-update", "-displaylines", "1.0", "end"))
+        self.configure(height=height)
 
 
 class ScrollableFrame(ttk.Frame):

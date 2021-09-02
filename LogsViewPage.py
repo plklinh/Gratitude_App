@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-
 from CustomWidgets import ScrollableFrame, DisplayOnlyText
 from CustomStyle import *
 
@@ -8,7 +7,7 @@ from NavMenu import NavMenu
 from EntrySingleFrame import SingleEntry
 
 
-class ViewDraftsPage(ttk.Frame):
+class ViewLogsPage(ttk.Frame):
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
 
@@ -33,13 +32,13 @@ class ViewDraftsPage(ttk.Frame):
         List of Entries
         """
         self.test_entry = SingleEntry(
-            self.draft_li, root, MOCK_DRAFT)
+            self.draft_li, root, MOCK_ENTRY)
         self.test_entry.pack(side=tk.TOP,
                              padx=SMALL_PAD, pady=SMALL_PAD
                              )
 
         self.test_entry_1 = SingleEntry(
-            self.draft_li, root, MOCK_DRAFT)
+            self.draft_li, root, MOCK_ENTRY)
         self.test_entry_1.pack(side=tk.TOP,
                                padx=SMALL_PAD, pady=SMALL_PAD
                                )

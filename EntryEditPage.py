@@ -6,5 +6,5 @@ from CustomStyle import *
 
 
 class EditEntryPage(ttk.Frame):
-    def __init__(self, root, *args, **kwargs):
+    def __init__(self, root, entry, *args, **kwargs):
         super().__init__(root, *args, **kwargs)

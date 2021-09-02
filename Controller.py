@@ -1,3 +1,4 @@
+from CustomStyle import MOCK_ENTRY
 import pandas as pd
 import numpy as np
 import sqlite3
@@ -73,10 +74,25 @@ def update_entry(conn, sql_cmd):
     conn.commit()
 
 
-if __name__ == "__main__":
-    df = read_all_entries()
-    print(df.dtypes)
+def match_plans(entry_df):
+    if len(entry_df["Plans"]) == 0:
+        return None
+    conn = connect_db()
+    sql = '''SELECT * from ''' + PLAN_TBL + '''
+            WHERE Plan_ID IN ("''' + '","'.join(entry_df["Plans"]) + '''")'''
+    plans = pd.read_sql(sql, conn)
+    return plans
 
-    plans, steps = read_all_plans()
-    print(plans.dtypes)
-    print(steps.dtypes)
+
+def match_steps(plan_df):
+    if plan_df.Num_Steps == 0:
+        return None
+    conn = connect_db()
+    sql = '''SELECT * from ''' + STEPS_TBL + '''
+            WHERE Plan_ID = "''' + plan_df.Plan_ID + '''"'''
+    steps = pd.read_sql(sql, conn)
+    return steps
+
+
+if __name__ == "__main__":
+    pass
