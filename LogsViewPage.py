@@ -1,3 +1,4 @@
+from Controller import get_all_logs
 import tkinter as tk
 from tkinter import ttk
 from CustomWidgets import ScrollableFrame, DisplayOnlyText
@@ -31,14 +32,12 @@ class ViewLogsPage(ttk.Frame):
         """
         List of Entries
         """
-        self.test_entry = SingleEntry(
-            self.draft_li, root, MOCK_ENTRY)
-        self.test_entry.pack(side=tk.TOP,
-                             padx=SMALL_PAD, pady=SMALL_PAD
-                             )
 
-        self.test_entry_1 = SingleEntry(
-            self.draft_li, root, MOCK_ENTRY)
-        self.test_entry_1.pack(side=tk.TOP,
-                               padx=SMALL_PAD, pady=SMALL_PAD
-                               )
+        all_logs = get_all_logs()
+
+        for log in all_logs.itertuples():
+            test_entry = SingleEntry(
+                self.draft_li, root, log)
+            test_entry.pack(side=tk.TOP,
+                            padx=SMALL_PAD, pady=SMALL_PAD
+                            )

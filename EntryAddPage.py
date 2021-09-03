@@ -1,8 +1,9 @@
-from CustomWidgets import ScrollableFrame, DisplayOnlyText
-from ttkthemes import ThemedStyle
-from tkinter import PhotoImage, ttk
+import pandas as pd
+from Controller import *
+
 import tkinter as tk
 from tkinter import ttk
+
 from CustomWidgets import ScrollableText, ScrollableFrame
 from CustomStyle import *
 
@@ -27,7 +28,7 @@ class AddEntryPage(ttk.Frame):
         self.quit_button.pack(
             pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
 
-        self.log_button = ttk.Button(self.menu_container, text="Submit",
+        self.log_button = ttk.Button(self.menu_container, text="Save",
                                      command=lambda: root.switch_page(root._HomePage))
 
         self.log_button.pack(pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
@@ -91,21 +92,21 @@ class AddEntryPage(ttk.Frame):
         """
         Plans Row
         """
-        plans_row = ttk.Frame(self.form)
-        plans_row.pack(expand=tk.YES,
-                       side=tk.TOP, fill=tk.X, padx=10, pady=10)
+        self.plans_row = ttk.Frame(self.form)
+        self.plans_row.pack(expand=tk.YES,
+                            side=tk.TOP, fill=tk.X, padx=10, pady=10)
 
-        plans_lab = ttk.Label(
-            plans_row, width=20,
+        self.plans_lab = ttk.Label(
+            self.plans_row, width=20,
             text="Plans: ",
             font=LABEL_FONT,
             anchor='nw')
-        plans_lab.pack(side=tk.LEFT)
+        self.plans_lab.pack(side=tk.LEFT)
 
-        # plans_entry = ttk.Entry(plans_row)
+        # plans_entry = ttk.Entry(self.plans_row)
         # plans_entry.pack(side=tk.LEFT, expand=tk.YES, fill=tk.X)
 
-        self.plans_container = ttk.Frame(plans_row)
+        self.plans_container = ttk.Frame(self.plans_row)
         self.plans_container.pack(
             side=tk.LEFT, expand=tk.YES, fill=tk.X)
 

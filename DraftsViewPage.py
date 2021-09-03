@@ -1,3 +1,5 @@
+from Controller import get_all_drafts
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -32,14 +34,12 @@ class ViewDraftsPage(ttk.Frame):
         """
         List of Entries
         """
-        self.test_entry = SingleEntry(
-            self.draft_li, root, MOCK_DRAFT)
-        self.test_entry.pack(side=tk.TOP,
-                             padx=SMALL_PAD, pady=SMALL_PAD
-                             )
 
-        self.test_entry_1 = SingleEntry(
-            self.draft_li, root, MOCK_DRAFT)
-        self.test_entry_1.pack(side=tk.TOP,
-                               padx=SMALL_PAD, pady=SMALL_PAD
-                               )
+        all_logs = get_all_drafts()
+
+        for log in all_logs.itertuples():
+            test_entry = SingleEntry(
+                self.draft_li, root, log)
+            test_entry.pack(side=tk.TOP,
+                            padx=SMALL_PAD, pady=SMALL_PAD
+                            )

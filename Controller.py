@@ -25,7 +25,7 @@ def read_all_entries():
     conn = connect_db()
     df = pd.read_sql("SELECT * from " + ENTRY_TBL,
                      conn,
-                     index_col="Entry_ID",
+                     # index_col="Entry_ID",
                      parse_dates=["Date"])
 
     for col in ["Gratitude", "Goals", "Plans"]:
@@ -39,7 +39,6 @@ def read_all_plans():
     conn = connect_db()
     plan_df = pd.read_sql("SELECT * from " + PLAN_TBL,
                           conn,
-                          index_col="Plan_ID",
                           parse_dates=["Date_created", "Date_completed"])
     step_df = pd.read_sql("SELECT * from " + STEPS_TBL,
                           conn,
@@ -50,11 +49,44 @@ def read_all_plans():
 
 def filter_entries(sql_cmd):
     conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute(sql_cmd)
-    result = cursor.fetchall()
+    df = pd.read_sql(sql_cmd,
+                     conn,
+                     # index_col="Entry_ID",
+                     parse_dates=["Date"])
+
+    for col in ["Gratitude", "Goals", "Plans"]:
+        df[col] = df[col].apply(lambda x: convert_stl(x))
+
     conn.close()
-    return result
+    return df
+
+
+def get_latest_log():
+    sql_cmd = ''' SELECT * from ''' + ENTRY_TBL + '''
+            WHERE Entry_Type = "Log"
+            ORDER BY Entry_ID DESC LIMIT 1'''
+
+    latest_entry = filter_entries(sql_cmd)
+
+    return next(filter_entries(sql_cmd).itertuples())
+
+
+def get_all_logs():
+    sql_cmd = ''' SELECT * from ''' + ENTRY_TBL + '''
+            WHERE Entry_Type = "Log"
+            ORDER BY Entry_ID DESC LIMIT 5'''
+
+    logs_df = filter_entries(sql_cmd)
+    return logs_df
+
+
+def get_all_drafts():
+    sql_cmd = ''' SELECT * from ''' + ENTRY_TBL + '''
+            WHERE Entry_Type = "Draft"
+            ORDER BY Entry_ID DESC  LIMIT 5'''
+
+    logs_df = filter_entries(sql_cmd)
+    return logs_df
 
 
 def add_entry(entry_obj, plan_obj, step_obj):
@@ -75,11 +107,11 @@ def update_entry(conn, sql_cmd):
 
 
 def match_plans(entry_df):
-    if len(entry_df["Plans"]) == 0:
+    if len(entry_df.Plans) == 0:
         return None
     conn = connect_db()
     sql = '''SELECT * from ''' + PLAN_TBL + '''
-            WHERE Plan_ID IN ("''' + '","'.join(entry_df["Plans"]) + '''")'''
+            WHERE Plan_ID IN ("''' + '","'.join(entry_df.Plans) + '''")'''
     plans = pd.read_sql(sql, conn)
     return plans
 
@@ -95,4 +127,4 @@ def match_steps(plan_df):
 
 
 if __name__ == "__main__":
-    pass
+    print(get_all_logs())

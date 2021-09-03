@@ -25,7 +25,7 @@ MOCK_ENTRY = {"Entry_ID": "E21080300",
               "Gratitude": ['My mum for packing antibiotics', 'Google', 'Funny Youtubers'],
               "Goals": ['Be committed and start project '],
               "Plans": ['P21080302', 'P21080500'],
-              "Affirmation": "(base) Macs-MacBook:Gratitude_App MacBook$ /Users/MacBook/miniconda3/bin/python /Volumes/Data/Project/Gratitude_App/App.py",
+              "Affirmation": "I am making progress with the app",
               "Additional_Notes": None}
 
 MOCK_DRAFT = {"Entry_ID": 'E21082300',

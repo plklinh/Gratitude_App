@@ -11,7 +11,7 @@ conn.execute("DROP TABLE IF EXISTS Steps")
 
 sql = ''' CREATE TABLE IF NOT EXISTS Entries (
    Entry_ID PRIMARY KEY NOT NULL,
-   Date NOT NULL,
+   Date TIMESTAMP NOT NULL,
    Entry_Type NOT NULL,
    Gratitude,
    Goals,

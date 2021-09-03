@@ -4,16 +4,17 @@ Icon Credit:
 from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 """
 import pandas as pd
+from Controller import *
 
 import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedStyle
 
-from CustomWidgets import ScrollableFrame, DisplayOnlyText
+from CustomWidgets import ScrollableFrame
 from CustomStyle import *
 
 from EntryAddPage import AddEntryPage
-from EntrySingleFrame import SingleEntry
+from EntrySingleFrame import SingleEntry, PlanFrame
 from DraftsViewPage import ViewDraftsPage
 from EntryEditPage import EditEntryPage
 from LogsViewPage import ViewLogsPage
@@ -46,18 +47,17 @@ class HomePage(ttk.Frame):
         self.logs_scrollframe.pack(
             pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES, fill=tk.BOTH)
 
-        # Initialize style
         s = ttk.Style()
-        # Create style
         s.configure('Frame1.TFrame', background=MAIN_BG)
 
         self.logs_scrollframe.scrollable_frame.config(style="Frame1.TFrame")
 
         """List of Logs"""
 
+        latest_log = get_latest_log()
         self.test_entry = SingleEntry(
             self.logs_scrollframe.scrollable_frame, root,
-            MOCK_ENTRY,
+            latest_log,
             mode="partial")
         self.test_entry.pack(side=tk.TOP,
                              padx=SMALL_PAD, pady=SMALL_PAD
@@ -77,6 +77,18 @@ class HomePage(ttk.Frame):
 
         self.plans_scrollframe.pack(
             pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES, fill=tk.BOTH)
+
+        self.plans_scrollframe.scrollable_frame.config(style="Frame1.TFrame")
+
+        plans_df, _ = read_all_plans()
+
+        plans_df = plans_df.iloc[6:10]
+
+        for plan in plans_df.itertuples():
+            plan_frame = PlanFrame(
+                self.plans_scrollframe.scrollable_frame, plan, mode="full", standalone=True)
+            plan_frame.pack(side=tk.TOP,
+                            padx=SMALL_PAD, pady=SMALL_PAD)
 
 
 class GratitudeApp(tk.Tk):

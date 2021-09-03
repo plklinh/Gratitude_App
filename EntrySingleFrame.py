@@ -1,16 +1,16 @@
-import pandas as pd
+from Controller import *
+
 import tkinter as tk
 from tkinter import PhotoImage, ttk
 
-from CustomWidgets import ScrollableFrame, DisplayOnlyText
+from CustomWidgets import DisplayOnlyText
 from CustomStyle import *
-
-from Controller import *
+from PlanSingleFrame import PlanFrame
 
 
 class SingleEntry(ttk.Frame):
     """
-    A fame to show an entry in display-only mode
+    A frame to show an entry in display-only mode
 
     ...
 
@@ -43,7 +43,7 @@ class SingleEntry(ttk.Frame):
         """
         Date
         """
-        if entry['Entry_Type'] == "Draft":
+        if entry.Entry_Type == "Draft":
             self.draft_row = ttk.Frame(self)
             self.draft_row.pack(padx=SMALL_PAD, pady=SMALL_PAD)
             self.draft_lab = ttk.Label(
@@ -64,7 +64,7 @@ class SingleEntry(ttk.Frame):
 
         self.date_lab = ttk.Label(
             self.date_row,
-            text=entry['Date'].strftime("%Y-%m-%d"))
+            text=entry.Date.strftime("%Y-%m-%d"))
         self.date_lab.pack(side=tk.LEFT, anchor='nw')
 
         """
@@ -82,14 +82,14 @@ class SingleEntry(ttk.Frame):
             self)
         self.gratitude_entry.pack(
             side=tk.TOP, expand=True, fill=tk.X,
-            padx=SMALL_PAD, pady=SMALL_PAD)
+            padx=LARGE_PAD, pady=SMALL_PAD)
 
         self.gratitude_entry.configure(state='normal')
 
-        for i in range(len(entry["Gratitude"])):
-            txt = '• '+entry["Gratitude"][i] + "\n"
-            if i == len(entry["Gratitude"])-1:
-                txt = '• '+entry["Gratitude"][i]
+        for i in range(len(entry.Gratitude)):
+            txt = '• '+entry.Gratitude[i] + "\n"
+            if i == len(entry.Gratitude)-1:
+                txt = '• '+entry.Gratitude[i]
             self.gratitude_entry.insert(
                 'end', txt)
 
@@ -108,17 +108,17 @@ class SingleEntry(ttk.Frame):
                             padx=SMALL_PAD, pady=SMALL_PAD)
 
         self.goals_entry = DisplayOnlyText(
-            self, height=len(entry["Goals"]))
+            self, height=len(entry.Goals))
         self.goals_entry.pack(
             side=tk.TOP, expand=True, fill=tk.X,
-            padx=SMALL_PAD, pady=SMALL_PAD)
+            padx=LARGE_PAD, pady=SMALL_PAD)
 
         self.goals_entry.configure(state='normal')
 
-        for i in range(len(entry["Goals"])):
-            txt = '• '+entry["Goals"][i] + "\n"
-            if i == len(entry["Goals"])-1:
-                txt = '• '+entry["Goals"][i]
+        for i in range(len(entry.Goals)):
+            txt = '• '+entry.Goals[i] + "\n"
+            if i == len(entry.Goals)-1:
+                txt = '• '+entry.Goals[i]
             self.goals_entry.insert(
                 'end', txt)
 
@@ -141,9 +141,10 @@ class SingleEntry(ttk.Frame):
 
         plans_df = match_plans(entry)
 
-        for plan in plans_df.itertuples():
-            plan_row = PlanFrame(plans_container, plan)
-            plan_row.pack(fill=tk.X, padx=SMALL_PAD, pady=SMALL_PAD)
+        if plans_df is not None:
+            for plan in plans_df.itertuples():
+                plan_row = PlanFrame(plans_container, plan)
+                plan_row.pack(fill=tk.X, padx=SMALL_PAD, pady=SMALL_PAD)
 
         """
         Affirmation Row
@@ -161,17 +162,19 @@ class SingleEntry(ttk.Frame):
 
         self.affirm_entry.pack(
             side=tk.TOP, anchor='nw',
-            padx=SMALL_PAD, pady=SMALL_PAD)
+            padx=LARGE_PAD, pady=SMALL_PAD)
+
+        txt = entry.Affirmation if entry.Affirmation is not None else ""
 
         self.affirm_entry.insert(
-            'end', entry["Affirmation"])
+            'end', txt)
 
         self.affirm_entry.configure(state='disabled')
 
         """
         Note
         """
-        if entry["Additional_Notes"] is not None:
+        if entry.Additional_Notes is not None:
             self.notes_lab = ttk.Label(
                 self, width=20,
                 text="Additional Notes: ",
@@ -182,8 +185,12 @@ class SingleEntry(ttk.Frame):
 
             self.notes_entry = DisplayOnlyText(self, height=2)
 
+            self.notes_entry.insert('end', entry.Additional_Notes)
+
+            self.notes_entry.configure(state='disabled')
+
             self.notes_entry.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, anchor='nw',
-                                  padx=SMALL_PAD, pady=SMALL_PAD)
+                                  padx=LARGE_PAD, pady=SMALL_PAD)
         """
         Button Options
         """
@@ -216,51 +223,3 @@ class SingleEntry(ttk.Frame):
 
     def confirm_delete(self):
         pass
-
-
-class PlanFrame(ttk.Frame):
-
-    def __init__(self, parent, plan, mode="full", *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.desc_row = ttk.Frame(self)
-        self.desc_row.pack(fill=tk.X)
-
-        self.desc_lab = ttk.Label(self.desc_row, text=plan.Description)
-        self.desc_lab.pack(side=tk.LEFT, anchor="nw")
-
-        self.status_lab = tk.Label(
-            self.desc_row, text=plan.Status, font=ANNOTATE_FONT)
-        self.status_lab.pack(side=tk.LEFT, padx=SMALL_PAD, anchor="nw")
-
-        font_col = INCOMP_COLOR
-        if plan.Status == "Completed":
-            font_col = COMP_COLOR
-        elif plan.Status == "Scrapped":
-            font_col = SCRAP_COLOR
-
-        self.status_lab.config(fg=font_col)
-        """
-        Steps
-        """
-        if mode == "full":
-            steps = match_steps(plan)
-            if steps is not None:
-                steps_container = ttk.Frame(self)
-                steps_container.pack(pady=SMALL_PAD)
-                steps_container.pack()
-                for step in steps.itertuples():
-                    step_row = ttk.Frame(steps_container)
-                    step_row.pack(side=tk.TOP)
-                    if step.Status == "Completed":
-                        step_stat = tk.Label(
-                            step_row, text="v", font=ANNOTATE_FONT)
-                        step_stat.config(fg=COMP_COLOR)
-                        step_stat.pack(side=tk.LEFT)
-                    else:
-                        step_stat = tk.Label(
-                            step_row, text=" ", font=ANNOTATE_FONT)
-                        step_stat.pack(side=tk.LEFT)
-                    step_desc = DisplayOnlyText(step_row)
-                    step_desc.insert("end", step.Description)
-                    step_desc.configure(state='disabled')
-                    step_desc.pack(side=tk.LEFT)
