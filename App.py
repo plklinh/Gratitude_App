@@ -1,24 +1,35 @@
 """
 Icon Credit:
-<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a>
+- Search:
+<div>Icons made by <a href="" title="phatplus">phatplus</a> 
+from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+- Trash:
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> 
+from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+- Pencil:
+<div>Icons made by <a href="https://www.flaticon.com/authors/those-icons" title="Those Icons">Those Icons</a> 
 from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 """
-import pandas as pd
+
 from Controller import *
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import PhotoImage, ttk
 from ttkthemes import ThemedStyle
+from tkcalendar import DateEntry
 
 from CustomWidgets import ScrollableFrame
 from CustomStyle import *
 
-from EntryAddPage import AddEntryPage
-from EntrySingleFrame import SingleEntry, PlanFrame
-from DraftsViewPage import ViewDraftsPage
-from EntryEditPage import EditEntryPage
-from LogsViewPage import ViewLogsPage
-from NavMenu import NavMenu
+from Pages.EntryAddPage import AddEntryPage
+from Pages.EntrySingleFrame import SingleEntry, PlanFrame
+from Pages.DraftsViewPage import ViewDraftsPage
+from Pages.EntryEditPage import EditEntryPage
+from Pages.LogsViewPage import ViewLogsPage
+from Pages.NavMenu import NavMenu
+from Pages.PlansPage import PlansPage
 
 
 class HomePage(ttk.Frame):
@@ -37,7 +48,7 @@ class HomePage(ttk.Frame):
         """
         self.logs_container = ttk.Frame(self)
         self.logs_container.pack(
-            side=tk.LEFT, padx=LARGE_PAD, pady=LARGE_PAD, expand=tk.YES, fill=tk.BOTH)
+            side=tk.LEFT, padx=(0, LARGE_PAD), pady=LARGE_PAD, expand=tk.YES, fill=tk.BOTH)
 
         self.logs_label = ttk.Label(self.logs_container,
                                     text="Latest Log", font=LABEL_FONT)
@@ -57,8 +68,7 @@ class HomePage(ttk.Frame):
         latest_log = get_latest_log()
         self.test_entry = SingleEntry(
             self.logs_scrollframe.scrollable_frame, root,
-            latest_log,
-            mode="partial")
+            latest_log)
         self.test_entry.pack(side=tk.TOP,
                              padx=SMALL_PAD, pady=SMALL_PAD
                              )
@@ -67,11 +77,19 @@ class HomePage(ttk.Frame):
         """
         self.plans_container = ttk.Frame(self)
         self.plans_container.pack(
-            side=tk.LEFT, padx=LARGE_PAD, pady=LARGE_PAD, expand=tk.YES, fill=tk.BOTH)
+            side=tk.LEFT, padx=(0, LARGE_PAD), pady=LARGE_PAD, expand=tk.YES, fill=tk.BOTH)
 
         self.plans_label = ttk.Label(self.plans_container,
                                      text="Plans", font=LABEL_FONT)
         self.plans_label.pack()
+
+        """
+        List of Plans
+        """
+
+        plans_df, _ = read_all_plans()
+
+        plans_df = plans_df.iloc[6:10]
 
         self.plans_scrollframe = ScrollableFrame(self.plans_container)
 
@@ -80,13 +98,9 @@ class HomePage(ttk.Frame):
 
         self.plans_scrollframe.scrollable_frame.config(style="Frame1.TFrame")
 
-        plans_df, _ = read_all_plans()
-
-        plans_df = plans_df.iloc[6:10]
-
         for plan in plans_df.itertuples():
             plan_frame = PlanFrame(
-                self.plans_scrollframe.scrollable_frame, plan, mode="full", standalone=True)
+                self.plans_scrollframe.scrollable_frame, plan, standalone=True)
             plan_frame.pack(side=tk.TOP,
                             padx=SMALL_PAD, pady=SMALL_PAD)
 
@@ -95,7 +109,7 @@ class GratitudeApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        self.minsize(700, 500)
+        self.minsize(1000, 700)
         style = ThemedStyle(self)
         style.set_theme("arc")
         self._page = None
@@ -104,6 +118,7 @@ class GratitudeApp(tk.Tk):
         self._ViewDraftsPage = ViewDraftsPage
         self._ViewLogsPage = ViewLogsPage
         self._EditEntryPage = EditEntryPage
+        self._PlansPage = PlansPage
         self.switch_page(self._HomePage)
 
     def switch_page(self, Page, entry=None):

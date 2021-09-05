@@ -5,7 +5,7 @@ from tkinter import PhotoImage, ttk
 
 from CustomWidgets import DisplayOnlyText
 from CustomStyle import *
-from PlanSingleFrame import PlanFrame
+from Pages.PlanSingleFrame import PlanFrame
 
 
 class SingleEntry(ttk.Frame):
@@ -27,18 +27,15 @@ class SingleEntry(ttk.Frame):
 
     Methods
     -------
-    toggle_display_mode()
-        Toggles between full and partial view
-
     confirm_delete()
         Creates a pop up window to confirm deletion
     """
 
     def __init__(self, parent, root, entry, mode="full", *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        pencil_icon = PhotoImage(file="Icon/pencil.png").subsample(4, 4)
-        trash_icon = PhotoImage(file="Icon/trash.png").subsample(4, 4)
-        eye_icon = PhotoImage(file="Icon/eye.png").subsample(4, 4)
+        PENCIL_ICON = PhotoImage(file="Icon/pencil.png").subsample(4, 4)
+        TRASH_ICON = PhotoImage(file="Icon/trash.png").subsample(4, 4)
+        #EYE_ICON = PhotoImage(file="Icon/eye.png").subsample(4, 4)
 
         """
         Date
@@ -78,22 +75,23 @@ class SingleEntry(ttk.Frame):
         self.gratitude_lab.pack(side=tk.TOP, anchor='nw',
                                 padx=SMALL_PAD, pady=SMALL_PAD)
 
-        self.gratitude_entry = DisplayOnlyText(
-            self)
-        self.gratitude_entry.pack(
-            side=tk.TOP, expand=True, fill=tk.X,
-            padx=LARGE_PAD, pady=SMALL_PAD)
+        if len(entry.Gratitude) > 0:
+            self.gratitude_entry = DisplayOnlyText(
+                self)
+            self.gratitude_entry.pack(
+                side=tk.TOP, expand=True, fill=tk.X,
+                padx=LARGE_PAD, pady=SMALL_PAD)
 
-        self.gratitude_entry.configure(state='normal')
+            self.gratitude_entry.configure(state='normal')
 
-        for i in range(len(entry.Gratitude)):
-            txt = '• '+entry.Gratitude[i] + "\n"
-            if i == len(entry.Gratitude)-1:
-                txt = '• '+entry.Gratitude[i]
-            self.gratitude_entry.insert(
-                'end', txt)
+            for i in range(len(entry.Gratitude)):
+                txt = '• '+entry.Gratitude[i] + "\n"
+                if i == len(entry.Gratitude)-1:
+                    txt = '• '+entry.Gratitude[i]
+                self.gratitude_entry.insert(
+                    'end', txt)
 
-        self.gratitude_entry.configure(state='disabled')
+            self.gratitude_entry.configure(state='disabled')
 
         """
         Goals
@@ -107,22 +105,23 @@ class SingleEntry(ttk.Frame):
         self.goals_lab.pack(side=tk.TOP, anchor='nw',
                             padx=SMALL_PAD, pady=SMALL_PAD)
 
-        self.goals_entry = DisplayOnlyText(
-            self, height=len(entry.Goals))
-        self.goals_entry.pack(
-            side=tk.TOP, expand=True, fill=tk.X,
-            padx=LARGE_PAD, pady=SMALL_PAD)
+        if len(entry.Goals) > 0:
+            self.goals_entry = DisplayOnlyText(
+                self, height=len(entry.Goals))
+            self.goals_entry.pack(
+                side=tk.TOP, expand=True, fill=tk.X,
+                padx=LARGE_PAD, pady=SMALL_PAD)
 
-        self.goals_entry.configure(state='normal')
+            self.goals_entry.configure(state='normal')
 
-        for i in range(len(entry.Goals)):
-            txt = '• '+entry.Goals[i] + "\n"
-            if i == len(entry.Goals)-1:
-                txt = '• '+entry.Goals[i]
-            self.goals_entry.insert(
-                'end', txt)
+            for i in range(len(entry.Goals)):
+                txt = '• '+entry.Goals[i] + "\n"
+                if i == len(entry.Goals)-1:
+                    txt = '• '+entry.Goals[i]
+                self.goals_entry.insert(
+                    'end', txt)
 
-        self.goals_entry.configure(state='disabled')
+            self.goals_entry.configure(state='disabled')
 
         """
         Plans Row
@@ -144,7 +143,7 @@ class SingleEntry(ttk.Frame):
         if plans_df is not None:
             for plan in plans_df.itertuples():
                 plan_row = PlanFrame(plans_container, plan)
-                plan_row.pack(fill=tk.X, padx=SMALL_PAD, pady=SMALL_PAD)
+                plan_row.pack(pady=(0, SMALL_PAD))
 
         """
         Affirmation Row
@@ -158,18 +157,11 @@ class SingleEntry(ttk.Frame):
         self.affirm_lab.pack(side=tk.TOP, anchor='nw',
                              padx=SMALL_PAD, pady=SMALL_PAD)
 
-        self.affirm_entry = DisplayOnlyText(self)
-
-        self.affirm_entry.pack(
-            side=tk.TOP, anchor='nw',
-            padx=LARGE_PAD, pady=SMALL_PAD)
-
-        txt = entry.Affirmation if entry.Affirmation is not None else ""
-
-        self.affirm_entry.insert(
-            'end', txt)
-
-        self.affirm_entry.configure(state='disabled')
+        if entry.Affirmation is not None:
+            self.affirm_entry = DisplayOnlyText(self)
+            self.affirm_entry.insert(
+                'end', entry.Affirmation)
+            self.affirm_entry.configure(state='disabled')
 
         """
         Note
@@ -198,28 +190,25 @@ class SingleEntry(ttk.Frame):
         self.options_row.pack(side=tk.TOP,
                               padx=SMALL_PAD, pady=SMALL_PAD)
 
-        if mode == "partial":
-            self.full_view_button = ttk.Button(
-                self.options_row, text="Full View",
-                image=eye_icon)
-            self.full_view_button.image = eye_icon
-            self.full_view_button.pack(side=tk.LEFT)
+        # if mode == "partial":
+        #     self.full_view_button = ttk.Button(
+        #         self.options_row, text="Full View",
+        #         image=EYE_ICON)
+        #     self.full_view_button.image = EYE_ICON
+        #     self.full_view_button.pack(side=tk.LEFT)
 
         self.edit_button = ttk.Button(self.options_row,
                                       text="Edit",
-                                      image=pencil_icon,
+                                      image=PENCIL_ICON,
                                       command=lambda: root.switch_page(root._EditEntryPage, entry=entry))
-        self.edit_button.image = pencil_icon
+        self.edit_button.image = PENCIL_ICON
         self.edit_button.pack(side=tk.LEFT)
 
         self.delete_button = ttk.Button(self.options_row,
                                         text="Delete",
-                                        image=trash_icon)
-        self.delete_button.image = trash_icon
+                                        image=TRASH_ICON)
+        self.delete_button.image = TRASH_ICON
         self.delete_button.pack(side=tk.LEFT)
-
-    def toggle_display_mode(self):
-        pass
 
     def confirm_delete(self):
         pass

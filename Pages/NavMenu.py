@@ -20,6 +20,10 @@ class NavMenu(ttk.Frame):
                                      command=lambda: root.switch_page(root._ViewLogsPage))
         self.log_button.pack(pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
 
+        self.plan_button = ttk.Button(self, text="Plans",
+                                      command=lambda: root.switch_page(root._PlansPage))
+        self.plan_button.pack(pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
+
         self.draft_button = ttk.Button(self, text="Drafts",
                                        command=lambda: root.switch_page(root._ViewDraftsPage))
         self.draft_button.pack(pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)

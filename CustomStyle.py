@@ -1,8 +1,8 @@
 import pandas as pd
 
-LABEL_FONT = ('TkDefaultFont', 13, 'bold')
-SMALL_FONT = ('TkDefaultFont', 9, 'bold')
-ANNOTATE_FONT = ('TkDefaultFont', 8, 'bold')
+LABEL_FONT = ('TkDefaultFont', 12, 'bold')
+SMALL_FONT = ('TkDefaultFont', 10, 'bold')
+ANNOTATE_FONT = ('TkDefaultFont', 9, 'bold')
 
 SMALL_BUTTON_WIDTH = 1
 BIG_BUTTON_WIDTH = 10
@@ -18,6 +18,8 @@ MAIN_BG = '#ececec'
 HIGHLIGHT_BG = "#5294e2"  # Baby blue
 MID_BG = "#5c616c"  # dark blue grey
 TEXT_BG = "#f2f4f5"  # mid grey
+
+PLAN_STATUSES = ["Incomplete", "Completed", "Scrapped"]
 
 MOCK_ENTRY = {"Entry_ID": "E21080300",
               "Date": pd.to_datetime("2021-08-03"),

@@ -12,13 +12,33 @@ PLAN_TBL = "Plans"
 STEPS_TBL = "Steps"
 
 
+def convert_str_to_li(str):
+    """
+    Converts a string to a list. Strings must be in the the format [string 1,string 2,..]
+    """
+    if str is None:
+        return []
+    else:
+        li = str[1:-1].split(",")
+        for i in range(len(li)):
+            li[i] = li[i].replace("\comma", ",")
+        return li
+
+
+def convert_li_to_str(li):
+    """
+    Converts a list of strings to a string. Resulting string is in the the format [string 1,string 2,..]
+    Any commas are replaced with \comma
+    """
+    for i in range(len(li)):
+        li[i] = li[i].replace(",", "\comma")
+    str = "["+",".join(li)+"]"
+    return str
+
+
 def connect_db():
     conn = sqlite3.connect(DB_FILE)
     return conn
-
-
-def convert_stl(str):
-    return str[1:-1].split(',') if str is not None else []
 
 
 def read_all_entries():
@@ -29,7 +49,7 @@ def read_all_entries():
                      parse_dates=["Date"])
 
     for col in ["Gratitude", "Goals", "Plans"]:
-        df[col] = df[col].apply(lambda x: convert_stl(x))
+        df[col] = df[col].apply(lambda x: convert_str_to_li(x))
 
     conn.close()
     return df
@@ -55,7 +75,7 @@ def filter_entries(sql_cmd):
                      parse_dates=["Date"])
 
     for col in ["Gratitude", "Goals", "Plans"]:
-        df[col] = df[col].apply(lambda x: convert_stl(x))
+        df[col] = df[col].apply(lambda x: convert_str_to_li(x))
 
     conn.close()
     return df
@@ -127,4 +147,12 @@ def match_steps(plan_df):
 
 
 if __name__ == "__main__":
-    print(get_all_logs())
+    # df = pd.read_csv("Data_personal/entries.csv")
+    # for col in ["Gratitude", "Goals", "Plans"]:
+    #     df[col] = df[col].apply(lambda x: convert_str_to_li(x))
+    # print(df["Gratitude"])
+    # all_entries.to_csv("entries.csv")
+
+    li = ['Nature',  'The Library',  'The Bus driver']
+
+    print(convert_str_to_li(str))

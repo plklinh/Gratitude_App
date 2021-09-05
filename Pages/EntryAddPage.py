@@ -160,34 +160,18 @@ class AddEntryPage(ttk.Frame):
         self.notes_entry.pack(side=tk.LEFT, expand=tk.YES, fill=tk.X,
                               ipadx=10, ipady=10)
 
-    def add_input_item(self, entry_container, entry_li, item_type=None):
+    def add_input_item(self, entry_container, entry_li):
         new_entry_frame = ttk.Frame(entry_container)
         new_entry_frame.pack(
             side=tk.TOP, expand=tk.YES, fill=tk.X)
-
-        def add_function(): return self.add_input_item(entry_container, entry_li)
-
-        if item_type == "step":
-            step_lab = ttk.Label(new_entry_frame, text="•")
-            step_lab.pack(side=tk.LEFT)
-            step_lab.config(width=SMALL_BUTTON_WIDTH)
-
-            def add_function():
-                return self.add_input_item(entry_container, entry_li, item_type="step")
 
         """Entry Box"""
         new_entry_box = ttk.Entry(new_entry_frame)
         new_entry_box.pack(side=tk.LEFT, expand=tk.YES, fill=tk.X)
         entry_li.append(new_entry_box)
 
-        def delete_function(): return self.delete_item(new_entry_box, entry_li)
-
-        if item_type == "step":
-            def delete_function():
-                return self.delete_item(new_entry_box, entry_li, item_type="step")
-
         """Add Button"""
-
+        def add_function(): return self.add_input_item(entry_container, entry_li)
         new_button_add_new = ttk.Button(
             new_entry_frame, text="+",
             command=add_function)
@@ -195,6 +179,8 @@ class AddEntryPage(ttk.Frame):
         new_button_add_new.config(width=SMALL_BUTTON_WIDTH)
 
         """Delete Button"""
+        def delete_function(): return self.delete_item(
+            new_entry_box, entry_li, entry_container)
         new_delete_button = ttk.Button(
             new_entry_frame, text="-", command=delete_function)
         new_delete_button.pack(side=tk.LEFT)
@@ -224,25 +210,58 @@ class AddEntryPage(ttk.Frame):
         """Add Button"""
         new_button_add_new = ttk.Button(
             description_row, text="+ steps",
-            command=lambda: self.add_input_item(steps_row, new_steps_li, item_type="step"))
+            command=lambda: self.add_step_item(steps_row, new_steps_li))
         new_button_add_new.pack(side=tk.LEFT)
+
         """Delete Button"""
         new_delete_button = ttk.Button(
             description_row, text="-",
-            command=lambda: self.delete_item(full_plan_entry, plan_li, item_type="plan"))
+            command=lambda: self.delete_item(full_plan_entry, plan_li,
+                                             plan_container, item_type="plan"))
         new_delete_button.pack(side=tk.LEFT)
         new_delete_button.config(width=SMALL_BUTTON_WIDTH)
 
-    def delete_item(self,  entry_to_del, entry_li, item_type=None):
-        if len(entry_li) == 0:
-            pass
+    def add_step_item(self, steps_container, steps_li):
+        new_step_row = ttk.Frame(steps_container)
+        new_step_row.pack(
+            side=tk.TOP, expand=tk.YES, fill=tk.X)
+        steps_li.append(new_step_row)
 
-        if item_type == "step" and len(entry_li) == 1:
-            parent_name = entry_to_del.winfo_parent()
-            parent = entry_to_del._nametowidget(parent_name)
-            parent.destroy()
+        check_var = tk.StringVar()
+        new_step_checkb = ttk.Checkbutton(
+            new_step_row, variable=check_var,
+            onvalue="Completed", offvalue="Incomplete")
+
+        new_step_checkb.pack(side=tk.LEFT)
+
+        new_step_box = ttk.Entry(new_step_row)
+        new_step_box.pack(side=tk.LEFT, expand=tk.YES, fill=tk.X)
+        steps_li.append(new_step_box)
+
+        """Add Button"""
+
+        new_button_add_new = ttk.Button(
+            new_step_row, text="+",
+            command=lambda: self.add_step_item(steps_container, steps_li))
+        new_button_add_new.pack(side=tk.LEFT)
+        new_button_add_new.config(width=SMALL_BUTTON_WIDTH)
+
+        """Delete Button"""
+        new_delete_button = ttk.Button(
+            new_step_row, text="-",
+            command=lambda: self.delete_item(
+                new_step_row, steps_li, steps_container, item_type="step")
+
+        )
+        new_delete_button.pack(side=tk.LEFT)
+        new_delete_button.config(width=SMALL_BUTTON_WIDTH)
+
+    def delete_item(self, entry_to_del, entry_li, container, item_type=None):
+
+        if item_type == "step" and len(entry_li) >= 1:
+            entry_to_del.destroy()
             entry_li.remove(entry_to_del)
-        elif len(entry_li) > 1:
+        else:
             if item_type == "plan":
                 full_entry = entry_to_del
                 entry_to_del = entry_to_del["Plan"]
@@ -257,6 +276,10 @@ class AddEntryPage(ttk.Frame):
             else:
                 parent.destroy()
                 entry_li.remove(entry_to_del)
-
-            # step_parent_name = entry_to_del.winfo_parent()
-            # entry_to_del._nametowidget(step_parent_name).pack_forget()
+        """
+        Add one if none left
+        """
+        if len(entry_li) == 0 and item_type == "plan":
+            self.add_plan_item(container, entry_li)
+        elif len(entry_li) == 0 and item_type is None:
+            self.add_input_item(container, entry_li)
