@@ -57,7 +57,7 @@ class PlanFrame(ttk.Frame):
             self.date_lab = ttk.Label(
                 self.date_row,
                 text="Date Created: ",
-                font=LABEL_FONT)
+                font=SMALL_LABEL_FONT)
             self.date_lab.pack(side=tk.LEFT, anchor='nw')
 
             self.date_lab = ttk.Label(
@@ -70,7 +70,7 @@ class PlanFrame(ttk.Frame):
             self.desc_title_lab = ttk.Label(
                 self.desc_title_row,
                 text="Description: ",
-                font=LABEL_FONT)
+                font=SMALL_LABEL_FONT)
             self.desc_title_lab.pack(side=tk.LEFT, anchor='nw',
                                      pady=SMALL_PAD)
 
@@ -83,30 +83,50 @@ class PlanFrame(ttk.Frame):
         """
         Status
         """
-        font_col = INCOMP_COLOR
+        status_font_col = INCOMP_COLOR
         if self.plan.Status == "Completed":
-            font_col = COMP_COLOR
+            status_font_col = COMP_COLOR
         elif self.plan.Status == "Scrapped":
-            font_col = SCRAP_COLOR
+            status_font_col = SCRAP_COLOR
 
         if not self.standalone:
-            self.desc_lab.insert(tk.INSERT, self.plan.Status+"\t")
+            self.desc_lab.insert(tk.INSERT, self.plan.Status+"  ")
             self.desc_lab.tag_add("status", "1.0", "1." +
-                                  str(len(self.plan.Status)))
+                                  str(len(self.plan.Status) + 2))
             self.desc_lab.tag_config(
-                "status", foreground=font_col, font=ANNOTATE_FONT)
+                "status", foreground=status_font_col, font=ANNOTATE_FONT)
+
+        """
+        Priority
+        """
+
+        priority_font_col = MEDP_COLOR
+        if self.plan.Priority == "High":
+            priority_font_col = HIGHP_COLOR
+        elif self.plan.Priority == "Low":
+            priority_font_col = LOWP_COLOR
+
+        if not self.standalone:
+            self.desc_lab.insert(tk.INSERT, self.plan.Priority+"  ")
+            self.desc_lab.tag_add("priority", "1." + str(len(self.plan.Status) + 2),
+                                  "1." + str(len(self.plan.Status) + 2 + len(self.plan.Priority)))
+            self.desc_lab.tag_config(
+                "priority", foreground=priority_font_col, font=ANNOTATE_FONT)
 
         self.desc_lab.insert('end', self.plan.Description)
         self.desc_lab.configure(state='disabled')
 
         if self.standalone:
+            """
+            Status + Priority in Standalone mode
+            """
             self.status_row = ttk.Frame(self.container)
             self.status_row.pack(side=tk.TOP, fill=tk.X)
 
             self.status_title_lab = ttk.Label(
                 self.status_row,
-                text="Status: ",
-                font=LABEL_FONT)
+                text="Status:\t",
+                font=SMALL_LABEL_FONT)
             self.status_title_lab.pack(side=tk.LEFT, anchor='nw',
                                        pady=SMALL_PAD)
 
@@ -117,7 +137,27 @@ class PlanFrame(ttk.Frame):
             self.status_lab.pack(side=tk.LEFT,  fill=tk.Y, anchor="nw",
                                  padx=SMALL_PAD,  pady=SMALL_PAD)
 
-            self.status_lab.config(fg=font_col)
+            self.status_lab.config(fg=status_font_col)
+
+            if self.plan.Priority != "":
+                self.priority_row = ttk.Frame(self.container)
+                self.priority_row.pack(side=tk.TOP, fill=tk.X)
+
+                self.priority_title_lab = ttk.Label(
+                    self.priority_row,
+                    text="Priority:\t",
+                    font=SMALL_LABEL_FONT)
+                self.priority_title_lab.pack(side=tk.LEFT, anchor='nw',
+                                             pady=SMALL_PAD)
+
+                self.priority_lab = tk.Label(
+                    self.priority_row,
+                    text=self.plan.Priority,
+                    font=ANNOTATE_FONT)
+                self.priority_lab.pack(side=tk.LEFT,  fill=tk.Y, anchor="nw",
+                                       padx=SMALL_PAD,  pady=SMALL_PAD)
+
+                self.priority_lab.config(fg=priority_font_col)
         """
         Steps
         """
@@ -128,7 +168,7 @@ class PlanFrame(ttk.Frame):
                 self.steps_title_row = ttk.Frame(self.container)
                 self.steps_title_row.pack(side=tk.TOP, fill=tk.X)
                 steps_lab = ttk.Label(self.steps_title_row, text="Steps: ",
-                                      font=LABEL_FONT)
+                                      font=SMALL_LABEL_FONT)
                 steps_lab.pack(fill=tk.X,
                                pady=SMALL_PAD)
 
@@ -141,12 +181,12 @@ class PlanFrame(ttk.Frame):
                 step_desc = DisplayOnlyText(step_row)
 
                 if step.Status == "Completed":
-                    step_desc.insert(tk.INSERT, "v ")
+                    step_desc.insert(tk.INSERT, "v    ")
                     step_desc.tag_add("status", "1.0", "1.1")
                     step_desc.tag_config(
                         "status", foreground=COMP_COLOR, font=ANNOTATE_FONT)
                 else:
-                    step_desc.insert(tk.INSERT, "• ")
+                    step_desc.insert(tk.INSERT, "•    ")
                     step_desc.tag_add("status", "1.0", "1.1")
                     step_desc.tag_config(
                         "status", foreground=INCOMP_COLOR, font=ANNOTATE_FONT)
@@ -179,16 +219,16 @@ class PlanFrame(ttk.Frame):
     def toggle_edit_mode(self):
         self.container.destroy()
         self.container = ttk.Frame(self)
-        self.container.pack(padx=SMALL_PAD, pady=SMALL_PAD)
+        self.container.pack(expand=tk.YES, fill=tk.X,
+                            padx=SMALL_PAD, pady=SMALL_PAD)
 
         self.date_row = ttk.Frame(self.container)
-        self.date_row.pack(side=tk.TOP, fill=tk.X,
-                           padx=SMALL_PAD, pady=SMALL_PAD)
+        self.date_row.pack(side=tk.TOP, fill=tk.X, pady=SMALL_PAD)
 
         self.date_lab = ttk.Label(
             self.date_row,
-            text="Date Created: ",
-            font=LABEL_FONT)
+            text="Date Created:\t",
+            font=SMALL_LABEL_FONT)
         self.date_lab.pack(side=tk.LEFT, anchor='nw')
 
         self.date_lab = ttk.Label(
@@ -203,67 +243,92 @@ class PlanFrame(ttk.Frame):
         Description
         """
         self.desc_title_row = ttk.Frame(self.container)
-        self.desc_title_row.pack(fill=tk.X)
+        self.desc_title_row.pack(fill=tk.X, pady=SMALL_PAD)
         self.desc_title_lab = ttk.Label(
             self.desc_title_row,
             text="Description: ",
-            font=LABEL_FONT)
-        self.desc_title_lab.pack(side=tk.LEFT, anchor='nw',
-                                 padx=SMALL_PAD, pady=SMALL_PAD)
+            font=SMALL_LABEL_FONT)
+        self.desc_title_lab.pack(side=tk.LEFT, anchor='nw')
 
         self.desc_row = ttk.Frame(self.container)
         self.desc_row.pack(fill=tk.X)
 
-        self.plan_entry = ttk.Entry(self.desc_row)
-        self.plan_entry.pack(side=tk.LEFT, expand=tk.YES, fill=tk.X,
-                             padx=SMALL_PAD, pady=SMALL_PAD)
+        self.description_entry = ttk.Entry(self.desc_row)
+        self.description_entry.pack(side=tk.LEFT,
+                                    expand=tk.YES, fill=tk.X,
+                                    padx=SMALL_PAD, pady=SMALL_PAD)
 
-        self.plan_entry.insert('end', self.plan.Description)
+        self.description_entry.insert('end', self.plan.Description)
 
         """
         Status
         """
         self.status_row = ttk.Frame(self.container)
-        self.status_row.pack(side=tk.TOP, fill=tk.X)
+        self.status_row.pack(side=tk.TOP, fill=tk.X, pady=SMALL_PAD)
 
         self.status_title_lab = ttk.Label(
             self.status_row,
-            text="Status: ",
-            font=LABEL_FONT)
+            text="Status:\t",
+            font=SMALL_LABEL_FONT)
         self.status_title_lab.pack(side=tk.LEFT, anchor='nw',
                                    pady=SMALL_PAD)
-
+        self.status_var = tk.StringVar()
         self.status_menu = ttk.Combobox(self.status_row,
+                                        textvariable=self.status_var,
                                         values=PLAN_STATUSES,
+                                        style=COMBOBOX_STYLE,
+                                        state="readonly",
                                         justify=tk.CENTER, width=10)
-        self.status_menu.current([0])
-        self.status_menu.state(statespec=('!disabled', 'readonly'))
+        self.status_var.set(self.plan.Status)
         self.status_menu.pack(side=tk.LEFT)
+
+        """
+        Priority
+        """
+        self.priority_row = ttk.Frame(self.container)
+        self.priority_row.pack(side=tk.TOP, fill=tk.X, pady=SMALL_PAD)
+
+        self.priority_title_lab = ttk.Label(
+            self.priority_row,
+            text="Priority:\t",
+            font=SMALL_LABEL_FONT)
+        self.priority_title_lab.pack(side=tk.LEFT, anchor='nw',
+                                     pady=SMALL_PAD)
+        self.priority_var = tk.StringVar()
+        self.priority_menu = ttk.Combobox(self.priority_row,
+                                          textvariable=self.priority_var,
+                                          values=PRIORITY_LVL,
+                                          style=COMBOBOX_STYLE,
+                                          state="readonly",
+                                          justify=tk.CENTER, width=10)
+        self.priority_var.set(self.plan.Priority)
+        self.priority_menu.pack(side=tk.LEFT)
 
         """
         Steps
         """
         self.steps_title_row = ttk.Frame(self.container)
         self.steps_title_row.pack(side=tk.TOP, fill=tk.X,
-                                  padx=SMALL_PAD, pady=SMALL_PAD)
+                                  pady=SMALL_PAD)
 
         steps_lab = ttk.Label(self.steps_title_row, text="Steps: ",
-                              font=LABEL_FONT)
+                              font=SMALL_LABEL_FONT)
         steps_lab.pack(fill=tk.X)
 
         steps_container = ttk.Frame(self.container)
-        steps_container.pack(side=tk.TOP, padx=SMALL_PAD, pady=SMALL_PAD)
+        steps_container.pack(side=tk.TOP, fill=tk.X,
+                             padx=SMALL_PAD, pady=SMALL_PAD)
 
-        new_steps_li = []
+        self.steps_li = []
 
         if self.plan.Num_Steps > 0:
             steps = match_steps(self.plan)
             for step in steps.itertuples():
                 self.add_step_item(
-                    steps_container, new_steps_li, prev_step=step)
+                    steps_container, self.steps_li, prev_step=step)
         else:
             self.add_step_item(
-                steps_container, new_steps_li, prev_step=None)
+                steps_container, self.steps_li, prev_step=None)
 
         """
         Buttons
@@ -275,7 +340,7 @@ class PlanFrame(ttk.Frame):
         self.edit_button = ttk.Button(self.options_row,
                                       text="Edit",
                                       image=submit_icon,
-                                      command=lambda: self.toggle_view_mode())
+                                      command=lambda: self.update_prev_plan())
         self.edit_button.image = submit_icon
         self.edit_button.pack(side=tk.LEFT)
 
@@ -299,7 +364,9 @@ class PlanFrame(ttk.Frame):
 
         new_step_box = ttk.Entry(new_step_row)
         new_step_box.pack(side=tk.LEFT, expand=tk.YES, fill=tk.X)
-        steps_li.append(new_step_box)
+
+        full_step_entry = {"Description": new_step_box, "Status": check_var}
+        self.steps_li.append(full_step_entry)
 
         if prev_step is not None:
             check_var.set(prev_step.Status)
@@ -316,19 +383,35 @@ class PlanFrame(ttk.Frame):
         """Delete Button"""
         new_delete_button = ttk.Button(
             new_step_row, text="-",
-            command=lambda: self.delete_step_item(self, steps_container, new_step_row, steps_li))
+            command=lambda: self.delete_step_item(full_step_entry, new_step_box, steps_li))
         new_delete_button.pack(side=tk.LEFT)
         new_delete_button.config(width=SMALL_BUTTON_WIDTH)
 
-    def delete_step_item(self, steps_container, step_to_del, step_li):
-        if len(step_li) == 0:
-            pass
+    def delete_step_item(self,  step_to_del, steps_container):
 
-        if len(step_li) > 1:
-            parent_name = step_to_del.winfo_parent()
-            parent = step_to_del._nametowidget(parent_name)
+        if len(self.steps_li):
+            parent_name = step_to_del["Description"].winfo_parent()
+            parent = step_to_del["Description"]._nametowidget(parent_name)
             parent.destroy()
-            step_li.remove(step_to_del)
+            self.steps_li.remove(step_to_del)
 
-        if len(step_li) == 0:
-            self.add_step_item(steps_container, step_li, prev_input=None)
+        if len(self.steps_li) == 0:
+            self.add_step_item(steps_container, self.steps_li, prev_input=None)
+
+    def update_prev_plan(self):
+        plan = {}
+        plan["Plan_ID"] = self.plan.Plan_ID
+        plan["Description"] = self.description_entry.get()
+        plan["Status"] = self.status_var
+        plan["Priority"] = self.priority_var
+        plan["Steps"] = []
+
+        for step_entry in self.steps_li:
+            step_txt = step_entry["Description"].get()
+            if step_txt == "":
+                pass
+            else:
+                full_step = {"Status": step_entry["Status"].get(),
+                             "Description": step_txt}
+                plan["Steps"].append(full_step)
+        self.toggle_view_mode()

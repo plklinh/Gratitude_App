@@ -1,7 +1,11 @@
 """
 Icon Credit:
 - Search:
-<div>Icons made by <a href="" title="phatplus">phatplus</a> 
+<div>Icons made by <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> 
+from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+- Funnel:
+<div>Icons made by <a href="" title="Kiranshastry">Kiranshastry</a> 
 from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 - Trash:
@@ -51,7 +55,7 @@ class HomePage(ttk.Frame):
             side=tk.LEFT, padx=(0, LARGE_PAD), pady=LARGE_PAD, expand=tk.YES, fill=tk.BOTH)
 
         self.logs_label = ttk.Label(self.logs_container,
-                                    text="Latest Log", font=LABEL_FONT)
+                                    text="Latest Log", font=LARGE_LABEL_FONT)
         self.logs_label.pack()
 
         self.logs_scrollframe = ScrollableFrame(self.logs_container)
@@ -61,7 +65,7 @@ class HomePage(ttk.Frame):
         s = ttk.Style()
         s.configure('Frame1.TFrame', background=MAIN_BG)
 
-        self.logs_scrollframe.scrollable_frame.config(style="Frame1.TFrame")
+        self.logs_scrollframe.scrollable_frame.config(style=CONTAINER_STYLE)
 
         """List of Logs"""
 
@@ -80,23 +84,21 @@ class HomePage(ttk.Frame):
             side=tk.LEFT, padx=(0, LARGE_PAD), pady=LARGE_PAD, expand=tk.YES, fill=tk.BOTH)
 
         self.plans_label = ttk.Label(self.plans_container,
-                                     text="Plans", font=LABEL_FONT)
+                                     text="Plans", font=LARGE_LABEL_FONT)
         self.plans_label.pack()
 
         """
         List of Plans
         """
 
-        plans_df, _ = read_all_plans()
-
-        plans_df = plans_df.iloc[6:10]
+        plans_df = get_latest_incomp_plans()
 
         self.plans_scrollframe = ScrollableFrame(self.plans_container)
 
         self.plans_scrollframe.pack(
             pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES, fill=tk.BOTH)
 
-        self.plans_scrollframe.scrollable_frame.config(style="Frame1.TFrame")
+        self.plans_scrollframe.scrollable_frame.config(style=CONTAINER_STYLE)
 
         for plan in plans_df.itertuples():
             plan_frame = PlanFrame(
@@ -109,9 +111,18 @@ class GratitudeApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        self.minsize(1000, 700)
+        self.minsize(750, 500)
         style = ThemedStyle(self)
         style.set_theme("arc")
+
+        s = ttk.Style()
+        s.configure('Frame1.TFrame', background=MAIN_BG)
+        s.configure('Combo1.TCombobox',
+                    selectbackground="white",
+                    selectforeground="black")
+        s.configure('Menu1.TMenubutton',
+                    justify=tk.CENTER)
+
         self._page = None
         self._HomePage = HomePage
         self._AddEntryPage = AddEntryPage

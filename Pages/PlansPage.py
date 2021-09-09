@@ -25,6 +25,10 @@ class PlansPage(ttk.Frame):
         """
         Plan filters
         """
+
+        """
+        Status filter
+        """
         self.side_box = ttk.Frame(self)
         self.side_box.pack(side=tk.LEFT, expand=tk.YES, fill=tk.BOTH,)
 
@@ -33,28 +37,53 @@ class PlansPage(ttk.Frame):
                              pady=LARGE_PAD)
 
         self.status_filter_lab = ttk.Label(self.filter_row,
-                                           text="Status", font=LABEL_FONT)
+                                           text="Status  ", font=SMALL_LABEL_FONT)
         self.status_filter_lab.pack(side=tk.LEFT)
+
+        self.status_var = tk.StringVar()
 
         self.status_filter_menu = ttk.Combobox(
             self.filter_row,
+            textvariable=self.status_var,
             values=PLAN_STATUSES,
-            justify=tk.CENTER, width=10, exportselection=0)
-        self.status_filter_menu.current([0])
-        self.status_filter_menu.state(statespec=('!disabled', 'readonly'))
-        self.status_filter_menu.pack(side=tk.LEFT)
+            state="readonly",
+            style=COMBOBOX_STYLE,
+            justify=tk.CENTER, width=10)
+        self.status_filter_menu.pack(side=tk.LEFT, padx=(0, SMALL_PAD))
 
-        ttk.Label(self.filter_row, text="From",
-                  font=LABEL_FONT).pack(side=tk.LEFT)
+        """
+        Priority Filter
+        """
+        self.priority_title_lab = ttk.Label(
+            self.filter_row,
+            text="Priority  ",
+            font=SMALL_LABEL_FONT)
+        self.priority_title_lab.pack(side=tk.LEFT)
+
+        self.priority_var = tk.StringVar()
+        self.priority_menu = ttk.Combobox(self.filter_row,
+                                          textvariable=self.priority_var,
+                                          values=PRIORITY_LVL,
+                                          style=COMBOBOX_STYLE,
+                                          state="readonly",
+                                          justify=tk.CENTER, width=10)
+        self.priority_menu.pack(side=tk.LEFT, padx=(0, SMALL_PAD))
+
+        """
+        Date Filter
+        """
+
+        ttk.Label(self.filter_row, text="From  ",
+                  font=SMALL_LABEL_FONT).pack(side=tk.LEFT)
         self.from_date = DateEntry(self.filter_row, width=10)
-        self.from_date.pack(side=tk.LEFT)
+        self.from_date.pack(side=tk.LEFT, padx=(0, SMALL_PAD))
 
-        ttk.Label(self.filter_row, text="To",
-                  font=LABEL_FONT).pack(side=tk.LEFT)
+        ttk.Label(self.filter_row, text="To  ",
+                  font=SMALL_LABEL_FONT).pack(side=tk.LEFT)
         self.to_date = DateEntry(self.filter_row, width=10)
-        self.to_date.pack(side=tk.LEFT)
+        self.to_date.pack(side=tk.LEFT, padx=(0, SMALL_PAD))
 
-        SEARCH_ICON = PhotoImage(file="Icon/search.png").subsample(4, 4)
+        SEARCH_ICON = PhotoImage(file="Icon/funnel.png").subsample(4, 4)
         self.search_button = ttk.Button(self.filter_row,
                                         text="Search",
                                         image=SEARCH_ICON)

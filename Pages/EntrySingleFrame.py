@@ -46,7 +46,7 @@ class SingleEntry(ttk.Frame):
             self.draft_lab = ttk.Label(
                 self.draft_row,
                 text="Draft",
-                font=LABEL_FONT)
+                font=SMALL_LABEL_FONT)
             self.draft_lab.pack()
 
         self.date_row = ttk.Frame(self)
@@ -56,7 +56,7 @@ class SingleEntry(ttk.Frame):
         self.date_lab = ttk.Label(
             self.date_row,
             text="Date: ",
-            font=LABEL_FONT)
+            font=SMALL_LABEL_FONT)
         self.date_lab.pack(side=tk.LEFT, anchor='nw')
 
         self.date_lab = ttk.Label(
@@ -70,7 +70,7 @@ class SingleEntry(ttk.Frame):
         self.gratitude_lab = ttk.Label(
             self, width=20,
             text="Things I'm grateful for:",
-            font=LABEL_FONT,
+            font=SMALL_LABEL_FONT,
             anchor='nw')
         self.gratitude_lab.pack(side=tk.TOP, anchor='nw',
                                 padx=SMALL_PAD, pady=SMALL_PAD)
@@ -85,9 +85,9 @@ class SingleEntry(ttk.Frame):
             self.gratitude_entry.configure(state='normal')
 
             for i in range(len(entry.Gratitude)):
-                txt = '• '+entry.Gratitude[i] + "\n"
+                txt = '•    '+entry.Gratitude[i] + "\n"
                 if i == len(entry.Gratitude)-1:
-                    txt = '• '+entry.Gratitude[i]
+                    txt = '•    '+entry.Gratitude[i]
                 self.gratitude_entry.insert(
                     'end', txt)
 
@@ -100,7 +100,7 @@ class SingleEntry(ttk.Frame):
         self.goals_lab = ttk.Label(
             self, width=20,
             text="Goals: ",
-            font=LABEL_FONT,
+            font=SMALL_LABEL_FONT,
             anchor='nw')
         self.goals_lab.pack(side=tk.TOP, anchor='nw',
                             padx=SMALL_PAD, pady=SMALL_PAD)
@@ -115,9 +115,9 @@ class SingleEntry(ttk.Frame):
             self.goals_entry.configure(state='normal')
 
             for i in range(len(entry.Goals)):
-                txt = '• '+entry.Goals[i] + "\n"
+                txt = '•    '+entry.Goals[i] + "\n"
                 if i == len(entry.Goals)-1:
-                    txt = '• '+entry.Goals[i]
+                    txt = '•    '+entry.Goals[i]
                 self.goals_entry.insert(
                     'end', txt)
 
@@ -130,7 +130,7 @@ class SingleEntry(ttk.Frame):
             self,
             width=20,
             text="Plans: ",
-            font=LABEL_FONT,
+            font=SMALL_LABEL_FONT,
             anchor='nw')
         plans_lab.pack(side=tk.TOP, anchor='nw',
                        padx=SMALL_PAD, pady=SMALL_PAD)
@@ -152,7 +152,7 @@ class SingleEntry(ttk.Frame):
         self.affirm_lab = ttk.Label(
             self, width=20,
             text="Affirmation: ",
-            font=LABEL_FONT,
+            font=SMALL_LABEL_FONT,
             anchor='nw')
         self.affirm_lab.pack(side=tk.TOP, anchor='nw',
                              padx=SMALL_PAD, pady=SMALL_PAD)
@@ -170,7 +170,7 @@ class SingleEntry(ttk.Frame):
             self.notes_lab = ttk.Label(
                 self, width=20,
                 text="Additional Notes: ",
-                font=LABEL_FONT,
+                font=SMALL_LABEL_FONT,
                 anchor='w')
             self.notes_lab.pack(side=tk.TOP, anchor='nw',
                                 padx=SMALL_PAD, pady=SMALL_PAD)
@@ -189,13 +189,6 @@ class SingleEntry(ttk.Frame):
         self.options_row = ttk.Frame(self)
         self.options_row.pack(side=tk.TOP,
                               padx=SMALL_PAD, pady=SMALL_PAD)
-
-        # if mode == "partial":
-        #     self.full_view_button = ttk.Button(
-        #         self.options_row, text="Full View",
-        #         image=EYE_ICON)
-        #     self.full_view_button.image = EYE_ICON
-        #     self.full_view_button.pack(side=tk.LEFT)
 
         self.edit_button = ttk.Button(self.options_row,
                                       text="Edit",

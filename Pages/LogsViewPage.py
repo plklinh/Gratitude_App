@@ -11,6 +11,7 @@ from Pages.EntrySingleFrame import SingleEntry
 
 class ViewLogsPage(ttk.Frame):
     def __init__(self, root, *args, **kwargs):
+
         super().__init__(root, *args, **kwargs)
 
         """
@@ -31,16 +32,16 @@ class ViewLogsPage(ttk.Frame):
                              pady=LARGE_PAD)
 
         ttk.Label(self.filter_row, text="From",
-                  font=LABEL_FONT).pack(side=tk.LEFT)
+                  font=SMALL_LABEL_FONT).pack(side=tk.LEFT)
         self.from_date = DateEntry(self.filter_row, width=10)
         self.from_date.pack(side=tk.LEFT)
 
         ttk.Label(self.filter_row, text="To",
-                  font=LABEL_FONT).pack(side=tk.LEFT)
+                  font=SMALL_LABEL_FONT).pack(side=tk.LEFT)
         self.to_date = DateEntry(self.filter_row, width=10)
         self.to_date.pack(side=tk.LEFT)
 
-        SEARCH_ICON = PhotoImage(file="Icon/search.png").subsample(4, 4)
+        SEARCH_ICON = PhotoImage(file="Icon/funnel.png").subsample(4, 4)
         self.search_button = ttk.Button(self.filter_row,
                                         text="Search",
                                         image=SEARCH_ICON)
@@ -53,9 +54,7 @@ class ViewLogsPage(ttk.Frame):
         self.logs_container = ScrollableFrame(self.side_box)
         self.logs_container.pack(side=tk.TOP, expand=tk.YES, fill=tk.BOTH)
         self.logs_li = self.logs_container.scrollable_frame
-        s = ttk.Style()
-        s.configure('Frame1.TFrame', background=MAIN_BG)
-        self.logs_li.config(style="Frame1.TFrame")
+        self.logs_li.config(style=CONTAINER_STYLE)
 
         """
         List of Entries

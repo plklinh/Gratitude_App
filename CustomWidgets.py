@@ -27,7 +27,7 @@ class ScrollableText(tk.Text):
 
 class DisplayOnlyText(tk.Text):
     def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, wrap="word", *args, **kwargs)
+        super().__init__(parent, wrap="word", font=SMALL_FONT, *args, **kwargs)
         self.config(background=TEXT_BG,
                     foreground=MID_BG,
                     highlightcolor=HIGHLIGHT_BG,

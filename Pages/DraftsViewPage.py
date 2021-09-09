@@ -33,16 +33,16 @@ class ViewDraftsPage(ttk.Frame):
                              pady=LARGE_PAD)
 
         ttk.Label(self.filter_row, text="From",
-                  font=LABEL_FONT).pack(side=tk.LEFT)
+                  font=SMALL_LABEL_FONT).pack(side=tk.LEFT)
         self.from_date = DateEntry(self.filter_row, width=10)
         self.from_date.pack(side=tk.LEFT)
 
         ttk.Label(self.filter_row, text="To",
-                  font=LABEL_FONT).pack(side=tk.LEFT)
+                  font=SMALL_LABEL_FONT).pack(side=tk.LEFT)
         self.to_date = DateEntry(self.filter_row, width=10)
         self.to_date.pack(side=tk.LEFT)
 
-        SEARCH_ICON = PhotoImage(file="Icon/search.png").subsample(4, 4)
+        SEARCH_ICON = PhotoImage(file="Icon/funnel.png").subsample(4, 4)
         self.search_button = ttk.Button(self.filter_row,
                                         text="Search",
                                         image=SEARCH_ICON)
@@ -55,9 +55,8 @@ class ViewDraftsPage(ttk.Frame):
         self.drafts_container = ScrollableFrame(self.side_box)
         self.drafts_container.pack(side=tk.LEFT, expand=tk.YES, fill=tk.BOTH)
         self.draft_li = self.drafts_container.scrollable_frame
-        s = ttk.Style()
-        s.configure('Frame1.TFrame', background=MAIN_BG)
-        self.draft_li.config(style="Frame1.TFrame")
+
+        self.draft_li.config(style=CONTAINER_STYLE)
 
         """
         List of Entries

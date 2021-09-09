@@ -1,9 +1,12 @@
+import datetime
 from CustomStyle import MOCK_ENTRY
 import pandas as pd
 import numpy as np
 import sqlite3
 
 DB_FILE = "Data_personal/GratitudeDatabase.db"
+
+TEST_DB = "Data/TestDatabase.db"
 
 ENTRY_TBL = "Entries"
 
@@ -30,14 +33,17 @@ def convert_li_to_str(li):
     Converts a list of strings to a string. Resulting string is in the the format [string 1,string 2,..]
     Any commas are replaced with \comma
     """
-    for i in range(len(li)):
-        li[i] = li[i].replace(",", "\comma")
+    # for i in range(len(li)):
+    #     li[i] = li[i].replace(",", "\comma")
     str = "["+",".join(li)+"]"
     return str
 
 
-def connect_db():
-    conn = sqlite3.connect(DB_FILE)
+def connect_db(test=False):
+    db = DB_FILE
+    if test:
+        db = TEST_DB
+    conn = sqlite3.connect(db)
     return conn
 
 
@@ -71,7 +77,6 @@ def filter_entries(sql_cmd):
     conn = connect_db()
     df = pd.read_sql(sql_cmd,
                      conn,
-                     # index_col="Entry_ID",
                      parse_dates=["Date"])
 
     for col in ["Gratitude", "Goals", "Plans"]:
@@ -109,8 +114,24 @@ def get_all_drafts():
     return logs_df
 
 
-def add_entry(entry_obj, plan_obj, step_obj):
+def get_latest_incomp_plans():
+    sql_cmd = ''' SELECT * from ''' + PLAN_TBL + '''
+            WHERE Status = "Incomplete"
+            ORDER BY Plan_ID DESC LIMIT 5'''
+
     conn = connect_db()
+    df = pd.read_sql(sql_cmd,
+                     conn,
+                     parse_dates=["Date_created", "Date_completed"])
+
+    conn.close()
+    return df
+
+
+def add_new_entry(entry_type, gratitude, goals, plans, affirmation, additional_notes):
+    date_created = datetime.today()
+
+    conn = connect_db(test=True)
     cursor = conn.cursor()
     # Add Entry
 
