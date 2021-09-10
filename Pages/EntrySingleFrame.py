@@ -35,11 +35,7 @@ class SingleEntry(ttk.Frame):
         super().__init__(parent, *args, **kwargs)
         PENCIL_ICON = PhotoImage(file="Icon/pencil.png").subsample(4, 4)
         TRASH_ICON = PhotoImage(file="Icon/trash.png").subsample(4, 4)
-        #EYE_ICON = PhotoImage(file="Icon/eye.png").subsample(4, 4)
 
-        """
-        Date
-        """
         if entry.Entry_Type == "Draft":
             self.draft_row = ttk.Frame(self)
             self.draft_row.pack(padx=SMALL_PAD, pady=SMALL_PAD)
@@ -48,6 +44,10 @@ class SingleEntry(ttk.Frame):
                 text="Draft",
                 font=SMALL_LABEL_FONT)
             self.draft_lab.pack()
+
+        """
+        Date
+        """
 
         self.date_row = ttk.Frame(self)
         self.date_row.pack(side=tk.TOP, fill=tk.X,
@@ -157,7 +157,7 @@ class SingleEntry(ttk.Frame):
         self.affirm_lab.pack(side=tk.TOP, anchor='nw',
                              padx=SMALL_PAD, pady=SMALL_PAD)
 
-        if entry.Affirmation is not None:
+        if entry.Affirmation != "":
             self.affirm_entry = DisplayOnlyText(self)
             self.affirm_entry.insert(
                 'end', entry.Affirmation)
@@ -166,7 +166,7 @@ class SingleEntry(ttk.Frame):
         """
         Note
         """
-        if entry.Additional_Notes is not None:
+        if entry.Additional_Notes != "":
             self.notes_lab = ttk.Label(
                 self, width=20,
                 text="Additional Notes: ",

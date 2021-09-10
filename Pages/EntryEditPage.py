@@ -137,7 +137,7 @@ class EditEntryPage(ttk.Frame):
             self.add_plan_item(self.plans_entry_container, self.plans_entry_li)
 
         self.plans_button = ttk.Button(
-            self.plans_container, text="Add Plan",
+            self.plans_container, text="+ plan",
             command=lambda: self.add_plan_item(self.plans_entry_container, self.plans_entry_li))
         self.plans_button.pack(side=tk.TOP)
 
@@ -219,6 +219,38 @@ class EditEntryPage(ttk.Frame):
         new_steps_li = []
         new_plan_frame.pack(side=tk.TOP, expand=tk.YES, fill=tk.X)
 
+        """Description"""
+        description_row = ttk.Frame(new_plan_frame)
+        description_row.pack(expand=tk.YES, fill=tk.X)
+
+        description_lab = ttk.Label(
+            description_row,
+            text="Description",
+            font=ANNOTATE_FONT)
+
+        description_lab.pack(side=tk.LEFT, anchor='nw',
+                             pady=SMALL_PAD, padx=(0, SMALL_PAD))
+
+        """Description Entry Box"""
+        new_plan_box = ttk.Entry(description_row)
+        new_plan_box.pack(side=tk.LEFT, expand=tk.YES, fill=tk.X)
+
+        """Delete Button"""
+        TRASH_ICON = PhotoImage(file="Icon/trash.png").subsample(4, 4)
+
+        new_delete_button = ttk.Button(
+            description_row,
+            text="Delete",
+            image=TRASH_ICON,
+            command=lambda: self.delete_item(full_plan_entry, plan_li,
+                                             plan_container, item_type="plan"))
+        new_delete_button.image = TRASH_ICON
+        new_delete_button.pack(side=tk.LEFT)
+        new_delete_button.config(width=SMALL_BUTTON_WIDTH)
+
+        """
+        Aux Row
+        """
         aux_row = ttk.Frame(new_plan_frame)
         aux_row.pack(expand=tk.YES, fill=tk.X)
         """Status"""
@@ -239,7 +271,7 @@ class EditEntryPage(ttk.Frame):
 
         status_title_lab = ttk.Label(
             aux_row,
-            text="  Priority\t",
+            text="\tPriority\t",
             font=ANNOTATE_FONT)
         status_title_lab.pack(side=tk.LEFT, anchor='nw',
                               pady=SMALL_PAD, padx=(0, SMALL_PAD))
@@ -252,28 +284,8 @@ class EditEntryPage(ttk.Frame):
                                      justify=tk.CENTER, width=10)
         priority_menu.pack(side=tk.LEFT)
 
-        """Description"""
-        description_row = ttk.Frame(new_plan_frame)
-        description_row.pack(expand=tk.YES, fill=tk.X)
-
-        description_lab = ttk.Label(
-            description_row,
-            text="Description",
-            font=ANNOTATE_FONT)
-
-        description_lab.pack(side=tk.LEFT, anchor='nw',
-                             pady=SMALL_PAD, padx=(0, SMALL_PAD))
-
         steps_row = ttk.Frame(new_plan_frame)
-        steps_row.pack(fill=tk.X)
-
-        # Empty Widget to resize container
-        empty_widget = ttk.Frame(steps_row)
-        empty_widget.pack(side=tk.TOP)
-
-        """Description Entry Box"""
-        new_plan_box = ttk.Entry(description_row)
-        new_plan_box.pack(side=tk.LEFT, expand=tk.YES, fill=tk.X)
+        steps_row.pack(fill=tk.X, pady=(0, SMALL_PAD))
 
         if prev_plan is not None:
             status_menu.current(PLAN_STATUSES.index(prev_plan.Status))
@@ -285,37 +297,53 @@ class EditEntryPage(ttk.Frame):
                     self.add_step_item(
                         steps_row, new_steps_li, prev_step=step)
 
-        full_plan_entry = {"Description": new_plan_box, "Status": status_menu,
+        """
+        Steps
+        """
+        steps_lab = ttk.Label(steps_row,
+                              text="Steps\t",
+                              font=ANNOTATE_FONT)
+        steps_lab.pack(side=tk.LEFT, anchor='nw',
+                       pady=SMALL_PAD, padx=(0, SMALL_PAD))
+
+        add_step_button = ttk.Button(steps_row, text="+ step",
+                                     command=lambda: self.add_step_item(steps_row, new_steps_li))
+        add_step_button.pack(side=tk.TOP, pady=(SMALL_PAD, 0))
+
+        """Draft"""
+        draft_row = ttk.Frame(new_plan_frame)
+        draft_row.pack(side=tk.TOP, expand=tk.YES, fill=tk.X,
+                       pady=(0, SMALL_PAD))
+
+        draft_title_lab = ttk.Label(
+            draft_row,
+            text="Draft\t",
+            font=ANNOTATE_FONT)
+        draft_title_lab.pack(side=tk.LEFT, anchor='nw',
+                             pady=SMALL_PAD)
+        draft_check_var = tk.StringVar()
+        draft_check_button = ttk.Checkbutton(
+            draft_row, variable=draft_check_var,
+            onvalue="Draft", offvalue="Log")
+
+        draft_check_button.pack(side=tk.LEFT, padx=(SMALL_PAD, 0))
+
+        if prev_plan is not None:
+            draft_check_var.set(prev_plan.Plan_Type)
+
+        """Append full plan entry"""
+
+        full_plan_entry = {"Description": new_plan_box, "Plan_Type": draft_check_button, "Status": status_menu,
                            "Priority": priority_menu, "Steps": new_steps_li}
         plan_li.append(full_plan_entry)
 
-        """Add Button"""
-        new_button_add_new = ttk.Button(
-            description_row, text="+ steps",
-            command=lambda: self.add_step_item(steps_row, new_steps_li))
-        new_button_add_new.pack(side=tk.LEFT)
-
-        """Delete Button"""
-        TRASH_ICON = PhotoImage(file="Icon/trash.png").subsample(4, 4)
-
-        new_delete_button = ttk.Button(
-            description_row,
-            text="Delete",
-            image=TRASH_ICON,
-            command=lambda: self.delete_item(full_plan_entry, plan_li,
-                                             plan_container, item_type="plan"))
-        new_delete_button.image = TRASH_ICON
-        new_delete_button.pack(side=tk.LEFT)
-        new_delete_button.config(width=SMALL_BUTTON_WIDTH)
-
     def add_step_item(self, steps_container, steps_li, prev_step=None):
         if len(steps_li) == 0:
-            steps_lab = ttk.Label(
-                steps_container,
-                text="Steps\t",
-                font=ANNOTATE_FONT)
-            steps_lab.pack(side=tk.LEFT, anchor='nw',
-                           pady=SMALL_PAD, padx=(0, SMALL_PAD))
+            add_step_button_name = steps_container.winfo_children()[1]
+            add_step_button = steps_container._nametowidget(
+                add_step_button_name)
+            add_step_button.destroy()
+
         new_step_row = ttk.Frame(steps_container)
         new_step_row.pack(
             side=tk.TOP, expand=tk.YES, fill=tk.X)
@@ -388,11 +416,9 @@ class EditEntryPage(ttk.Frame):
             grandparent.destroy()
         elif item_type == "step":
             if len(entry_li) == 0:
-                grandparent_name = parent.winfo_parent()
-                grandparent = parent._nametowidget(grandparent_name)
-                steps_lab_name = grandparent.winfo_children()[1]
-                steps_lab = grandparent._nametowidget(steps_lab_name)
-                steps_lab.destroy()
+                add_step_button = ttk.Button(container, text="+ step",
+                                             command=lambda: self.add_step_item(container, entry_li))
+                add_step_button.pack(side=tk.TOP)
             parent.destroy()
         elif item_type is None:
             parent.destroy()
@@ -443,6 +469,7 @@ class EditEntryPage(ttk.Frame):
                 pass
             else:
                 plan = {}
+                plan["Plan_Type"] = plan_entry["Plan_Type"].get()
                 plan["Description"] = plan_entry["Description"].get().replace(
                     ",", "\comma")
                 plan["Status"] = plan_entry["Status"].get()
@@ -457,8 +484,6 @@ class EditEntryPage(ttk.Frame):
                                      "Description": step_txt}
                         plan["Steps"].append(full_step)
                 plans_li.append(plan)
-
-        print(plans_li)
 
         # Affirmation Entry
         affirmation = self.affirm_entry.get("1.0", 'end-1c')

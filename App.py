@@ -1,39 +1,38 @@
 """
 Icon Credit:
 - Search:
-<div>Icons made by <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> 
+<div>Icons made by <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a>
 from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 - Funnel:
-<div>Icons made by <a href="" title="Kiranshastry">Kiranshastry</a> 
+<div>Icons made by <a href="" title="Kiranshastry">Kiranshastry</a>
 from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 - Trash:
-<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> 
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a>
 from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 - Pencil:
-<div>Icons made by <a href="https://www.flaticon.com/authors/those-icons" title="Those Icons">Those Icons</a> 
+<div>Icons made by <a href="https://www.flaticon.com/authors/those-icons" title="Those Icons">Those Icons</a>
 from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 """
 
 from Controller import *
 
 import tkinter as tk
-from tkinter import PhotoImage, ttk
+from tkinter import ttk
 from ttkthemes import ThemedStyle
-from tkcalendar import DateEntry
 
 from CustomWidgets import ScrollableFrame
 from CustomStyle import *
 
 from Pages.EntryAddPage import AddEntryPage
 from Pages.EntrySingleFrame import SingleEntry, PlanFrame
-from Pages.DraftsViewPage import ViewDraftsPage
 from Pages.EntryEditPage import EditEntryPage
-from Pages.LogsViewPage import ViewLogsPage
+from Pages.EntriesViewPage import ViewEntriesPage
 from Pages.NavMenu import NavMenu
 from Pages.PlansPage import PlansPage
+from Pages.PlanAddPage import AddPlanPage
 
 
 class HomePage(ttk.Frame):
@@ -121,14 +120,15 @@ class GratitudeApp(tk.Tk):
                     selectbackground="white",
                     selectforeground="black")
         s.configure('Menu1.TMenubutton',
-                    justify=tk.CENTER)
+                    justify=tk.CENTER,
+                    anchor="center")
 
         self._page = None
         self._HomePage = HomePage
         self._AddEntryPage = AddEntryPage
-        self._ViewDraftsPage = ViewDraftsPage
-        self._ViewLogsPage = ViewLogsPage
+        self._ViewLogsPage = ViewEntriesPage
         self._EditEntryPage = EditEntryPage
+        self._AddPlanPage = AddPlanPage
         self._PlansPage = PlansPage
         self.switch_page(self._HomePage)
 

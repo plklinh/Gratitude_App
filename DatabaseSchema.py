@@ -40,6 +40,7 @@ cursor.execute(sql)
 sql = ''' CREATE TABLE IF NOT EXISTS Plans (
    Plan_ID PRIMARY KEY NOT NULL,
    Date_created NOT NULL,
+   Plan_Type NOT NULL,
    Description,
    Num_Steps INTEGER,
    Status,
@@ -117,6 +118,7 @@ cursor.execute(sql)
 sql = ''' CREATE TABLE IF NOT EXISTS Plans (
    Plan_ID PRIMARY KEY NOT NULL,
    Date_created NOT NULL,
+   Plan_Type NOT NULL,
    Description,
    Num_Steps INTEGER,
    Status,

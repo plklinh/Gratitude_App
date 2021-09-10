@@ -107,9 +107,10 @@ class PlanFrame(ttk.Frame):
             priority_font_col = LOWP_COLOR
 
         if not self.standalone:
-            self.desc_lab.insert(tk.INSERT, self.plan.Priority+"  ")
+            self.desc_lab.insert(tk.INSERT, self.plan.Priority + "  ")
             self.desc_lab.tag_add("priority", "1." + str(len(self.plan.Status) + 2),
-                                  "1." + str(len(self.plan.Status) + 2 + len(self.plan.Priority)))
+                                  "1." + str(len(self.plan.Status) + 2 + len(self.plan.Priority)
+                                             ))
             self.desc_lab.tag_config(
                 "priority", foreground=priority_font_col, font=ANNOTATE_FONT)
 
@@ -117,12 +118,14 @@ class PlanFrame(ttk.Frame):
         self.desc_lab.configure(state='disabled')
 
         if self.standalone:
+
             """
             Status + Priority in Standalone mode
             """
             self.status_row = ttk.Frame(self.container)
             self.status_row.pack(side=tk.TOP, fill=tk.X)
 
+            """Status"""
             self.status_title_lab = ttk.Label(
                 self.status_row,
                 text="Status:\t",
@@ -167,16 +170,16 @@ class PlanFrame(ttk.Frame):
             if self.standalone:
                 self.steps_title_row = ttk.Frame(self.container)
                 self.steps_title_row.pack(side=tk.TOP, fill=tk.X)
-                steps_lab = ttk.Label(self.steps_title_row, text="Steps: ",
-                                      font=SMALL_LABEL_FONT)
-                steps_lab.pack(fill=tk.X,
-                               pady=SMALL_PAD)
+                self.steps_lab = ttk.Label(self.steps_title_row, text="Steps: ",
+                                           font=SMALL_LABEL_FONT)
+                self.steps_lab.pack(fill=tk.X,
+                                    pady=SMALL_PAD)
 
-            steps_container = ttk.Frame(self.container)
-            steps_container.pack(padx=SMALL_PAD)
+            self.steps_container = ttk.Frame(self.container)
+            self.steps_container.pack(padx=SMALL_PAD)
 
             for step in steps.itertuples():
-                step_row = ttk.Frame(steps_container)
+                step_row = ttk.Frame(self.steps_container)
                 step_row.pack(side=tk.TOP)
                 step_desc = DisplayOnlyText(step_row)
 
@@ -197,7 +200,7 @@ class PlanFrame(ttk.Frame):
 
         if self.standalone:
             pencil_icon = PhotoImage(file="Icon/pencil.png").subsample(4, 4)
-            trash_icon = PhotoImage(file="Icon/trash.png").subsample(4, 4)
+            TRASH_ICON = PhotoImage(file="Icon/trash.png").subsample(4, 4)
 
             self.options_row = ttk.Frame(self.container)
             self.options_row.pack(side=tk.TOP,
@@ -212,22 +215,29 @@ class PlanFrame(ttk.Frame):
 
             self.delete_button = ttk.Button(self.options_row,
                                             text="Delete",
-                                            image=trash_icon)
-            self.delete_button.image = trash_icon
+                                            image=TRASH_ICON,
+                                            command=lambda: self.confirm_delete())
+            self.delete_button.image = TRASH_ICON
             self.delete_button.pack(side=tk.LEFT)
 
     def toggle_edit_mode(self):
+
         self.container.destroy()
         self.container = ttk.Frame(self)
         self.container.pack(expand=tk.YES, fill=tk.X,
                             padx=SMALL_PAD, pady=SMALL_PAD)
+
+        SUBMIT_ICON = PhotoImage(file="Icon/enter.png").subsample(4, 4)
+        TRASH_ICON = PhotoImage(file="Icon/trash.png").subsample(4, 4)
+
+        """Date"""
 
         self.date_row = ttk.Frame(self.container)
         self.date_row.pack(side=tk.TOP, fill=tk.X, pady=SMALL_PAD)
 
         self.date_lab = ttk.Label(
             self.date_row,
-            text="Date Created:\t",
+            text="Date Created:   ",
             font=SMALL_LABEL_FONT)
         self.date_lab.pack(side=tk.LEFT, anchor='nw')
 
@@ -236,8 +246,22 @@ class PlanFrame(ttk.Frame):
             text=self.plan.Date_created.strftime("%Y-%m-%d"))
         self.date_lab.pack(side=tk.LEFT, anchor='nw')
 
-        submit_icon = PhotoImage(file="Icon/enter.png").subsample(4, 4)
-        trash_icon = PhotoImage(file="Icon/trash.png").subsample(4, 4)
+        """Draft"""
+
+        self.draft_title_lab = ttk.Label(
+            self.date_row,
+            text="Draft:\t",
+            font=SMALL_LABEL_FONT)
+        self.draft_title_lab.pack(side=tk.LEFT, anchor='nw',
+                                  pady=SMALL_PAD)
+        self.draft_check_var = tk.StringVar()
+        self.draft_check_button = ttk.Checkbutton(
+            self.date_row, variable=self.draft_check_var,
+            onvalue="Draft", offvalue="Log")
+
+        self.draft_check_button.pack(side=tk.LEFT)
+
+        self.draft_check_var.set(self.plan.Plan_Type)
 
         """
         Description
@@ -311,24 +335,27 @@ class PlanFrame(ttk.Frame):
         self.steps_title_row.pack(side=tk.TOP, fill=tk.X,
                                   pady=SMALL_PAD)
 
-        steps_lab = ttk.Label(self.steps_title_row, text="Steps: ",
-                              font=SMALL_LABEL_FONT)
-        steps_lab.pack(fill=tk.X)
+        self.steps_lab = ttk.Label(self.steps_title_row, text="Steps: ",
+                                   font=SMALL_LABEL_FONT)
+        self.steps_lab.pack(fill=tk.X)
 
-        steps_container = ttk.Frame(self.container)
-        steps_container.pack(side=tk.TOP, fill=tk.X,
-                             padx=SMALL_PAD, pady=SMALL_PAD)
+        self.steps_container = ttk.Frame(self.container)
+        self.steps_container.pack(side=tk.TOP, fill=tk.X,
+                                  padx=SMALL_PAD, pady=SMALL_PAD)
 
         self.steps_li = []
+
+        self.add_step_button = None
 
         if self.plan.Num_Steps > 0:
             steps = match_steps(self.plan)
             for step in steps.itertuples():
-                self.add_step_item(
-                    steps_container, self.steps_li, prev_step=step)
+                self.add_step_item(prev_step=step)
         else:
-            self.add_step_item(
-                steps_container, self.steps_li, prev_step=None)
+            self.add_step_button = ttk.Button(
+                self.steps_container, text="Add Step",
+                command=lambda: self.add_step_item(prev_step=None))
+            self.add_step_button.pack(side=tk.TOP)
 
         """
         Buttons
@@ -339,19 +366,26 @@ class PlanFrame(ttk.Frame):
 
         self.edit_button = ttk.Button(self.options_row,
                                       text="Edit",
-                                      image=submit_icon,
+                                      image=SUBMIT_ICON,
                                       command=lambda: self.update_prev_plan())
-        self.edit_button.image = submit_icon
+        self.edit_button.image = SUBMIT_ICON
         self.edit_button.pack(side=tk.LEFT)
 
         self.delete_button = ttk.Button(self.options_row,
                                         text="Delete",
-                                        image=trash_icon)
-        self.delete_button.image = trash_icon
+                                        image=TRASH_ICON,
+                                        command=lambda: self.confirm_delete())
+        self.delete_button.image = TRASH_ICON
         self.delete_button.pack(side=tk.LEFT)
 
-    def add_step_item(self, steps_container, steps_li, prev_step=None):
-        new_step_row = ttk.Frame(steps_container)
+    def confirm_delete(self):
+        self.destroy()
+
+    def add_step_item(self, prev_step=None):
+        if len(self.steps_li) == 0 and prev_step is None:
+            self.add_step_button.destroy()
+
+        new_step_row = ttk.Frame(self.steps_container)
         new_step_row.pack(
             side=tk.TOP, expand=tk.YES, fill=tk.X)
 
@@ -376,18 +410,18 @@ class PlanFrame(ttk.Frame):
 
         new_button_add_new = ttk.Button(
             new_step_row, text="+",
-            command=lambda: self.add_step_item(steps_container, steps_li, prev_step=None))
+            command=lambda: self.add_step_item(prev_step=None))
         new_button_add_new.pack(side=tk.LEFT)
         new_button_add_new.config(width=SMALL_BUTTON_WIDTH)
 
         """Delete Button"""
         new_delete_button = ttk.Button(
             new_step_row, text="-",
-            command=lambda: self.delete_step_item(full_step_entry, new_step_box, steps_li))
+            command=lambda: self.delete_step_item(full_step_entry))
         new_delete_button.pack(side=tk.LEFT)
         new_delete_button.config(width=SMALL_BUTTON_WIDTH)
 
-    def delete_step_item(self,  step_to_del, steps_container):
+    def delete_step_item(self,  step_to_del):
 
         if len(self.steps_li):
             parent_name = step_to_del["Description"].winfo_parent()
@@ -396,11 +430,15 @@ class PlanFrame(ttk.Frame):
             self.steps_li.remove(step_to_del)
 
         if len(self.steps_li) == 0:
-            self.add_step_item(steps_container, self.steps_li, prev_input=None)
+            self.add_step_button = ttk.Button(
+                self.steps_container, text="Add Step",
+                command=lambda: self.add_step_item())
+            self.add_step_button.pack(side=tk.TOP)
 
     def update_prev_plan(self):
         plan = {}
         plan["Plan_ID"] = self.plan.Plan_ID
+        plan["Plan_Type"] = self.draft_check_var.get()
         plan["Description"] = self.description_entry.get()
         plan["Status"] = self.status_var
         plan["Priority"] = self.priority_var
