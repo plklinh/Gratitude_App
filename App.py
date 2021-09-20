@@ -75,15 +75,17 @@ class HomePage(ttk.Frame):
 
         """List of Logs"""
 
-        self.test_entry = SingleEntry(
-            self.logs_scrollframe.scrollable_frame, root,
-            latest_log)
-        self.test_entry.pack(side=tk.TOP,
-                             padx=SMALL_PAD, pady=SMALL_PAD
-                             )
+        if latest_log is not None:
+            self.test_entry = SingleEntry(
+                self.logs_scrollframe.scrollable_frame, root,
+                latest_log)
+            self.test_entry.pack(side=tk.TOP,
+                                 padx=SMALL_PAD, pady=SMALL_PAD
+                                 )
         """
         Plans Pane
         """
+
         self.plans_container = ttk.Frame(self)
         self.plans_container.pack(
             side=tk.LEFT, padx=(0, LARGE_PAD), pady=LARGE_PAD, expand=tk.YES, fill=tk.BOTH)

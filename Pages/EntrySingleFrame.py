@@ -33,6 +33,8 @@ class SingleEntry(ttk.Frame):
 
     def __init__(self, parent, root, entry, mode="full", *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
+        self.entry = entry
+
         PENCIL_ICON = PhotoImage(file="Icon/pencil.png").subsample(4, 4)
         TRASH_ICON = PhotoImage(file="Icon/trash.png").subsample(4, 4)
 
@@ -201,9 +203,11 @@ class SingleEntry(ttk.Frame):
 
         self.delete_button = ttk.Button(self.options_row,
                                         text="Delete",
-                                        image=TRASH_ICON)
+                                        image=TRASH_ICON,
+                                        command=lambda: self.confirm_delete())
         self.delete_button.image = TRASH_ICON
         self.delete_button.pack(side=tk.LEFT)
 
     def confirm_delete(self):
-        pass
+        self.destroy()
+        delete_entry(self.entry, test=TESTING)

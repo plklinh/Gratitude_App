@@ -166,7 +166,7 @@ class PlanFrame(ttk.Frame):
         """
 
         if self.plan.Num_Steps > 0:
-            steps = match_steps(self.plan, test=TESTING)
+            self.prev_steps = match_steps(self.plan, test=TESTING)
             if self.standalone:
                 self.steps_title_row = ttk.Frame(self.container)
                 self.steps_title_row.pack(side=tk.TOP, fill=tk.X)
@@ -178,7 +178,7 @@ class PlanFrame(ttk.Frame):
             self.steps_container = ttk.Frame(self.container)
             self.steps_container.pack(padx=SMALL_PAD)
 
-            for step in steps.itertuples():
+            for step in self.prev_steps.itertuples():
                 step_row = ttk.Frame(self.steps_container)
                 step_row.pack(side=tk.TOP)
                 step_desc = DisplayOnlyText(step_row)
@@ -197,6 +197,8 @@ class PlanFrame(ttk.Frame):
                 step_desc.insert("end", step.Description)
                 step_desc.configure(state='disabled')
                 step_desc.pack(side=tk.LEFT)
+        else:
+            self.prev_steps = None
 
         if self.standalone:
             pencil_icon = PhotoImage(file="Icon/pencil.png").subsample(4, 4)
@@ -355,6 +357,7 @@ class PlanFrame(ttk.Frame):
             for step in steps.itertuples():
                 self.add_step_item(prev_step=step)
         else:
+            self.prev_steps = None
             self.add_step_button = ttk.Button(
                 self.steps_container, text="Add Step",
                 command=lambda: self.add_step_item(prev_step=None))
@@ -381,9 +384,6 @@ class PlanFrame(ttk.Frame):
         self.delete_button.image = TRASH_ICON
         self.delete_button.pack(side=tk.LEFT)
 
-    def confirm_delete(self):
-        self.destroy()
-
     def add_step_item(self, prev_step=None):
         if len(self.steps_li) == 0 and prev_step is None:
             self.add_step_button.destroy()
@@ -408,6 +408,8 @@ class PlanFrame(ttk.Frame):
         if prev_step is not None:
             check_var.set(prev_step.Status)
             new_step_box.insert('end', prev_step.Description)
+        else:
+            check_var.set("Incomplete")
 
         """Add Button"""
 
@@ -438,6 +440,10 @@ class PlanFrame(ttk.Frame):
                 command=lambda: self.add_step_item())
             self.add_step_button.pack(side=tk.TOP)
 
+    def confirm_delete(self):
+        self.destroy()
+        delete_plan(self.plan.Plan_ID, test=TESTING)
+
     def update_prev_plan(self):
         plan = {}
         plan["Plan_ID"] = self.plan.Plan_ID
@@ -452,8 +458,24 @@ class PlanFrame(ttk.Frame):
             if step_txt == "":
                 pass
             else:
-                full_step = {"Status": step_entry["Status"].get(),
+
+                full_step = {"Plan_ID": plan["Plan_ID"],
+                             "Status": step_entry["Status"].get(),
                              "Description": step_txt}
                 plan["Steps"].append(full_step)
+
+        updated_plan = update_plan(
+            plan_id=plan["Plan_ID"],
+            date_created=self.plan.Date_created,
+            plan_type=plan["Plan_Type"],
+            desc=plan["Description"],
+            status=plan["Status"],
+            priority=plan["Priority"],
+            steps=plan["Steps"],
+            prev_steps=self.prev_steps,
+            prev_date_completed=self.plan.Date_completed,
+            test=TESTING)
+
+        self.plan = updated_plan
 
         self.toggle_view_mode()

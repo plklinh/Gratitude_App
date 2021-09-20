@@ -10,6 +10,9 @@ from CustomStyle import *
 class EditEntryPage(ttk.Frame):
     def __init__(self, root, entry, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
+        self.root = root
+        self.entry - entry
+
         """
         Menu Pane
         """
@@ -23,16 +26,16 @@ class EditEntryPage(ttk.Frame):
             pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
 
         self.log_button = ttk.Button(self.menu_container, text="Save",
-                                     command=lambda: root.switch_page(root._HomePage))
+                                     command=lambda: self.submit_entry(entry_type="Log"))
 
         self.log_button.pack(pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
 
         self.draft_button = ttk.Button(self.menu_container, text="Save as Draft",
-                                       command=lambda: root.switch_page(root._HomePage))
+                                       command=lambda: self.submit_entry(entry_type="Draft"))
         self.draft_button.pack(pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
 
         self.delete_button = ttk.Button(self.menu_container, text="Delete",
-                                        command=lambda: root.switch_page(root._HomePage))
+                                        command=lambda: self.confirm_delete())
         self.delete_button.pack(pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
 
         """
@@ -333,8 +336,11 @@ class EditEntryPage(ttk.Frame):
 
         """Append full plan entry"""
 
-        full_plan_entry = {"Description": new_plan_box, "Plan_Type": draft_check_button, "Status": status_menu,
-                           "Priority": priority_menu, "Steps": new_steps_li}
+        full_plan_entry = {"Description": new_plan_box,
+                           "Plan_Type": draft_check_var,
+                           "Status": status_menu,
+                           "Priority": priority_menu,
+                           "Steps": new_steps_li}
         plan_li.append(full_plan_entry)
 
     def add_step_item(self, steps_container, steps_li, prev_step=None):
@@ -424,10 +430,13 @@ class EditEntryPage(ttk.Frame):
             parent.destroy()
             entry_li.remove(entry_to_del)
         """
-        Add one if none left and the item type is a plan or generic input row
+        Add one if none left and the item type is a generic input row
         """
         if len(entry_li) == 0 and item_type is None:
             self.add_input_item(container, entry_li)
+
+    def confirm_dfl(self):
+        self.root.switch_page(self.root._HomePage)
 
     def submit_entry(self, entry_type="Log"):
         """Retrieves user's input and save output to database

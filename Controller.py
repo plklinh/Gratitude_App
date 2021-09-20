@@ -1,3 +1,4 @@
+from collections import namedtuple
 from CustomStyle import TESTING
 import datetime
 import pandas as pd
@@ -6,7 +7,7 @@ import sqlite3
 
 DB_FILE = "Data_personal/GratitudeDatabase.db"
 
-TEST_DB = "Data/TestDatabase.db"
+TEST_DB = "Data_personal/TestDatabase.db"
 
 ENTRY_TBL = "Entries"
 
@@ -85,7 +86,21 @@ def get_latest_log(test=False):
 
     latest_entry = filter_entries(sql_cmd, test=test)
 
-    return next(latest_entry.itertuples())
+    Entry = namedtuple(
+        "Entry", "Entry_ID Date Entry_Type Gratitude Goals Plans Affirmation Additional_Notes")
+
+    if len(latest_entry) == 0:
+        latest_entry_tuple = None
+    else:
+        latest_entry_tuple = Entry(Entry_ID=latest_entry["Entry_ID"][0],
+                                   Date=latest_entry["Date"][0],
+                                   Entry_Type=latest_entry["Entry_Type"][0],
+                                   Gratitude=latest_entry["Gratitude"][0],
+                                   Goals=latest_entry["Goals"][0],
+                                   Plans=latest_entry["Plans"][0],
+                                   Affirmation=latest_entry["Affirmation"][0],
+                                   Additional_Notes=latest_entry["Additional_Notes"][0])
+    return latest_entry_tuple
 
 
 def get_all_logs(test=False):
@@ -104,11 +119,6 @@ def get_all_drafts(test=False):
 
     logs_df = filter_entries(sql_cmd, test=test)
     return logs_df
-
-
-def update_entry(conn, sql_cmd, test=False):
-    conn.cursor().execute(sql_cmd)
-    conn.commit()
 
 
 """ Plan Methods """
@@ -193,10 +203,7 @@ def match_steps(plan_df, test=False):
 
 
 def add_new_entry(entry_type, gratitude, goals, plans, affirmation, additional_notes, test=False):
-
     conn = connect_db(test=test)
-
-    cursor = conn.cursor()
 
     date_created = datetime.date.today()
 
@@ -206,14 +213,17 @@ def add_new_entry(entry_type, gratitude, goals, plans, affirmation, additional_n
 
     if len(plans) != 0:
         sql = '''SELECT Plan_ID from ''' + PLAN_TBL + '''
-            WHERE Plan_ID LIKE "P''' + date_created.strftime("%y%m%d") + '''%"'''
+            WHERE Plan_ID LIKE "P''' + date_created.strftime("%y%m%d") + '''%"
+            ORDER BY Plan_ID DESC
+            LIMIT 1
+            '''
 
-        same_day_plan_ids = pd.read_sql(sql, conn)
+        max_plan_id = pd.read_sql(sql, conn)
 
-        num_same_day = len(same_day_plan_ids)
-
-        sql = '''INSERT INTO ''' + PLAN_TBL + ''' (Plan_ID,Date_created,Plan_Type,Description, Num_Steps,Status,Priority,Date_completed)
-                VALUES '''
+        if len(max_plan_id) > 0:
+            num_same_day = int(len(max_plan_id["Plan_ID"][8:]))
+        else:
+            num_same_day = 0
 
         for plan in plans:
             plan_df = add_new_plan(plan_type=plan["Plan_Type"],
@@ -240,18 +250,25 @@ def add_new_entry(entry_type, gratitude, goals, plans, affirmation, additional_n
     # Add Entry
 
     sql = '''SELECT Entry_ID from ''' + ENTRY_TBL + '''
-            WHERE Entry_ID LIKE "E''' + date_created.strftime("%y%m%d") + '''%"'''
+            WHERE Entry_ID LIKE "E''' + date_created.strftime("%y%m%d") + '''%"
+            ORDER BY Entry_ID DESC
+            LIMIT 1
+            '''
 
-    same_day_entry_ids = pd.read_sql(sql, conn)
+    max_entry_id = pd.read_sql(sql, conn)
 
     entry_id = "E"+date_created.strftime("%y%m%d")
 
-    num_same_day = len(same_day_entry_ids)
-
-    if num_same_day > 9:
-        entry_id = entry_id+str(num_same_day)
+    if len(max_entry_id) > 0:
+        num_same_day = int(len(max_entry_id["Entry_ID"][8:]))
+        if num_same_day > 8:
+            entry_id = entry_id+str(num_same_day+1)
+        else:
+            entry_id = entry_id+"0"+str(num_same_day+1)
     else:
-        entry_id = entry_id+"0"+str(num_same_day)
+        entry_id = entry_id+"00"
+
+    print(entry_id)
 
     entry_df = pd.DataFrame(data={"Entry_ID": [entry_id],
                                   "Date": [date_created],
@@ -262,7 +279,6 @@ def add_new_entry(entry_type, gratitude, goals, plans, affirmation, additional_n
                                   "Affirmation": [affirmation],
                                   "Additional_Notes": [additional_notes]
                                   })
-    print(entry_df)
 
     entry_df.to_sql(ENTRY_TBL,
                     conn,
@@ -282,11 +298,16 @@ def add_new_plan(plan_type, desc, status, priority, steps, prev_conn=None, num_s
     if prev_conn is None:
         conn = connect_db(test=test)
         sql = '''SELECT Plan_ID from ''' + PLAN_TBL + '''
-            WHERE Date_created="''' + date_created.strftime("%Y-%m-%d") + '''"'''
+            WHERE Plan_ID LIKE "P''' + date_created.strftime("%y%m%d") + '''%"
+            ORDER BY Plan_ID DESC
+            LIMIT 1
+            '''
+        max_plan_id = pd.read_sql(sql, conn)
 
-        same_day_plan_ids = pd.read_sql(sql, conn)
-
-        num_same_day = len(same_day_plan_ids)
+        if len(max_plan_id) > 0:
+            num_same_day = int(len(max_plan_id["Plan_ID"][8:]))
+        else:
+            num_same_day = 0
 
     else:
         conn = prev_conn
@@ -294,9 +315,9 @@ def add_new_plan(plan_type, desc, status, priority, steps, prev_conn=None, num_s
     plan_id = "P"+date_created.strftime("%y%m%d")
 
     if num_same_day > 9:
-        plan_id = plan_id+str(num_same_day)
+        plan_id = plan_id+str(num_same_day + 1)
     else:
-        plan_id = plan_id+"0"+str(num_same_day)
+        plan_id = plan_id+"0"+str(num_same_day + 1)
 
     num_steps = len(steps)
 
@@ -330,11 +351,130 @@ def add_new_plan(plan_type, desc, status, priority, steps, prev_conn=None, num_s
         return plan_df
 
 
+""" Delete Methods"""
+
+
+def delete_entry(entry, test=False):
+    conn = connect_db(test=test)
+    cursor = conn.cursor()
+    sql_cmd = 'DELETE FROM ' + ENTRY_TBL + \
+        ' WHERE Entry_ID = "' + entry.Entry_ID + '"'
+    cursor.execute(sql_cmd)
+
+    for plan_id in entry.Plans:
+        delete_plan(plan_id, test=test)
+
+    conn.commit()
+    conn.close()
+
+
+def delete_plan(plan_id, prev_conn=None, test=False):
+    if prev_conn is None:
+        conn = connect_db(test=test)
+        cursor = conn.cursor()
+    else:
+        conn = prev_conn
+
+    delete_plan_sql = 'DELETE FROM ' + PLAN_TBL + \
+        ' WHERE Plan_ID = "' + plan_id + '"'
+    cursor.execute(delete_plan_sql)
+
+    delete_steps_sql = 'DELETE FROM ' + STEPS_TBL + \
+        ' WHERE Plan_ID = "' + plan_id + '"'
+    cursor.execute(delete_steps_sql)
+
+    if prev_conn is None:
+        conn.commit()
+        conn.close()
+
+
+""" Update Methods """
+
+
+def update_plan(plan_id, date_created, plan_type, desc, status, priority, steps, prev_steps, prev_date_completed, prev_conn=None, test=False):
+    date_today = datetime.date.today()
+
+    if prev_conn is None:
+        conn = connect_db(test=test)
+        cursor = conn.cursor()
+    else:
+        conn = prev_conn
+
+    if prev_date_completed is not None and status == "Completed":
+        plan_date_comp = prev_date_completed
+    else:
+        plan_date_comp = date_today if status == "Completed" else None
+
+    update_plan_sql = 'UPDATE ' + PLAN_TBL + \
+        ''' SET Plan_Type = "{Plan_Type}",
+                Description = "{Description}",
+                Status = "{Status}",
+                Priority = "{Priority}",
+                Num_Steps = {Num_Steps},
+                Date_completed = "{Date_completed}" '''.format(
+            Plan_Type=plan_type,
+            Description=desc,
+            Status=status,
+            Priority=priority,
+            Num_Steps=len(steps),
+            Date_completed=plan_date_comp) + \
+        '''
+        WHERE Plan_ID = "''' + plan_id + '''"
+        '''
+
+    cursor.execute(update_plan_sql)
+
+    delete_steps_sql = 'DELETE FROM ' + STEPS_TBL + \
+        ' WHERE Plan_ID = "' + plan_id + '"'
+    cursor.execute(delete_steps_sql)
+
+    for step in steps:
+        if prev_steps is not None and step["Description"] in prev_steps.Description:
+            prev_step = prev_steps[prev_steps.Description ==
+                                   step["Description"]]
+            if prev_step["Status"][0] == step["Status"]:
+                step_date_comp = prev_step["Status"][0]
+            else:
+                step_date_comp = date_today if step["Status"] == "Completed" else None
+        else:
+            step_date_comp = date_today if step["Status"] == "Completed" else None
+        step["Date_completed"] = step_date_comp
+
+    pd.DataFrame(steps).to_sql(STEPS_TBL,
+                               conn,
+                               if_exists="append",
+                               index=False)
+
+    if prev_conn is None:
+        conn.commit()
+        conn.close()
+
+        Plan = namedtuple(
+            "Plan", "Plan_ID Date_created Plan_Type Description Num_Steps Status Priority Date_completed")
+
+        updated_plan_tuple = Plan(Plan_ID=plan_id,
+                                  Date_created=date_created,
+                                  Plan_Type=plan_type,
+                                  Description=desc,
+                                  Num_Steps=len(steps),
+                                  Status=status,
+                                  Priority=priority,
+                                  Date_completed=plan_date_comp)
+        return updated_plan_tuple
+
+
 if __name__ == "__main__":
 
-    print(get_latest_log(test=TESTING))
+    # sql_cmd = ''' SELECT * from ''' + STEPS_TBL
 
-    sql_cmd = ''' SELECT * from ''' + STEPS_TBL
+    # conn = connect_db(test=TESTING)
+    # df = pd.read_sql(sql_cmd,
+    #                  conn,
+    #                  parse_dates=["Date_created", "Date_completed"])
+    # df = df.fillna(value="")
+    # print(df)
+
+    sql_cmd = ''' SELECT * from ''' + ENTRY_TBL + " ORDER BY Entry_ID DESC LIMIT 5"
 
     conn = connect_db(test=TESTING)
     df = pd.read_sql(sql_cmd,
@@ -343,5 +483,6 @@ if __name__ == "__main__":
     df = df.fillna(value="")
     print(df)
 
-    print(get_latest_incomp_plans(test=TESTING))
+    print(get_all_logged_plans(test=TESTING))
+
     pass

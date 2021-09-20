@@ -38,7 +38,7 @@ class PlansPage(ttk.Frame):
         """
         LOGGED PLANS
         """
-        plans_df = get_all_logged_plans()
+        plans_df = get_all_logged_plans(test=TESTING)
 
         plans_df = plans_df.iloc[6:10]
         """
@@ -127,7 +127,7 @@ class PlansPage(ttk.Frame):
         """
         DRAFT PLANS
         """
-        plans_df = get_all_draft_plans()
+        plans_df = get_all_draft_plans(test=TESTING)
 
         """
         Plan filters

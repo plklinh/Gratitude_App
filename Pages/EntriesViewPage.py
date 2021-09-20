@@ -75,7 +75,7 @@ class ViewEntriesPage(ttk.Frame):
         List of Entries
         """
 
-        self.current_logs = get_all_logs()
+        self.current_logs = get_all_logs(test=TESTING)
 
         for log in self.current_logs.itertuples():
             test_entry = SingleEntry(
@@ -122,7 +122,7 @@ class ViewEntriesPage(ttk.Frame):
         List of Entries
         """
 
-        all_logs = get_all_drafts()
+        all_logs = get_all_drafts(test=TESTING)
 
         for log in all_logs.itertuples():
             test_entry = SingleEntry(
