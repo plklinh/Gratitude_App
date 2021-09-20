@@ -166,7 +166,7 @@ class PlanFrame(ttk.Frame):
         """
 
         if self.plan.Num_Steps > 0:
-            steps = match_steps(self.plan)
+            steps = match_steps(self.plan, test=TESTING)
             if self.standalone:
                 self.steps_title_row = ttk.Frame(self.container)
                 self.steps_title_row.pack(side=tk.TOP, fill=tk.X)
@@ -248,15 +248,18 @@ class PlanFrame(ttk.Frame):
 
         """Draft"""
 
+        self.draft_row = ttk.Frame(self.container)
+        self.draft_row.pack(side=tk.TOP, fill=tk.X, pady=SMALL_PAD)
+
         self.draft_title_lab = ttk.Label(
-            self.date_row,
+            self.draft_row,
             text="Draft:\t",
             font=SMALL_LABEL_FONT)
         self.draft_title_lab.pack(side=tk.LEFT, anchor='nw',
                                   pady=SMALL_PAD)
         self.draft_check_var = tk.StringVar()
         self.draft_check_button = ttk.Checkbutton(
-            self.date_row, variable=self.draft_check_var,
+            self.draft_row, variable=self.draft_check_var,
             onvalue="Draft", offvalue="Log")
 
         self.draft_check_button.pack(side=tk.LEFT)
@@ -348,7 +351,7 @@ class PlanFrame(ttk.Frame):
         self.add_step_button = None
 
         if self.plan.Num_Steps > 0:
-            steps = match_steps(self.plan)
+            steps = match_steps(self.plan, test=TESTING)
             for step in steps.itertuples():
                 self.add_step_item(prev_step=step)
         else:
@@ -440,8 +443,8 @@ class PlanFrame(ttk.Frame):
         plan["Plan_ID"] = self.plan.Plan_ID
         plan["Plan_Type"] = self.draft_check_var.get()
         plan["Description"] = self.description_entry.get()
-        plan["Status"] = self.status_var
-        plan["Priority"] = self.priority_var
+        plan["Status"] = self.status_var.get()
+        plan["Priority"] = self.priority_var.get()
         plan["Steps"] = []
 
         for step_entry in self.steps_li:
@@ -452,4 +455,5 @@ class PlanFrame(ttk.Frame):
                 full_step = {"Status": step_entry["Status"].get(),
                              "Description": step_txt}
                 plan["Steps"].append(full_step)
+
         self.toggle_view_mode()

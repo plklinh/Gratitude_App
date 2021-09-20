@@ -1,4 +1,5 @@
 import pandas as pd
+TESTING = True
 
 LARGE_LABEL_FONT = ('TkDefaultFont', 15, 'bold')
 SMALL_LABEL_FONT = ('TkDefaultFont', 13, 'bold')

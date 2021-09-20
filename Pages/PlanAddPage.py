@@ -49,6 +49,8 @@ class AddPlanPage(ttk.Frame):
 
         super().__init__(root, *args, **kwargs)
 
+        self.root = root
+
         """
         Menu Pane
         """
@@ -62,12 +64,12 @@ class AddPlanPage(ttk.Frame):
             pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
 
         self.log_button = ttk.Button(self.menu_container, text="Save",
-                                     command=lambda: self.submit_entry())
+                                     command=lambda: self.submit_plan())
 
         self.log_button.pack(pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
 
         self.draft_button = ttk.Button(self.menu_container, text="Save as Draft",
-                                       command=lambda: root.switch_page(root._HomePage))
+                                       command=lambda: self.submit_plan(plan_type="Draft"))
         self.draft_button.pack(pady=SMALL_PAD, padx=SMALL_PAD, expand=tk.YES)
 
         """
@@ -216,8 +218,8 @@ class AddPlanPage(ttk.Frame):
     def submit_plan(self, plan_type="Log"):
         plan = {}
         plan["Description"] = self.description_entry.get()
-        plan["Status"] = self.status_var
-        plan["Priority"] = self.priority_var
+        plan["Status"] = self.status_var.get()
+        plan["Priority"] = self.priority_var.get()
         plan["Steps"] = []
 
         for step_entry in self.steps_li:
@@ -228,4 +230,12 @@ class AddPlanPage(ttk.Frame):
                 full_step = {"Status": step_entry["Status"].get(),
                              "Description": step_txt}
                 plan["Steps"].append(full_step)
-        self.toggle_view_mode()
+
+        add_new_plan(plan_type=plan_type,
+                     desc=plan["Description"],
+                     status=plan["Status"],
+                     priority=plan["Priority"],
+                     steps=plan["Steps"],
+                     test=TESTING)
+
+        self.root.switch_page(self.root._HomePage)

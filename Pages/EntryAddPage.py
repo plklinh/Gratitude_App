@@ -354,13 +354,17 @@ class AddEntryPage(ttk.Frame):
         draft_check_button = ttk.Checkbutton(
             draft_row, variable=draft_check_var,
             onvalue="Draft", offvalue="Log")
+        draft_check_var.set("Log")
 
         draft_check_button.pack(side=tk.LEFT, padx=(SMALL_PAD, 0))
 
         """Append full plan entry"""
 
-        full_plan_entry = {"Description": new_plan_box, "Plan_Type": draft_check_button, "Status": status_menu,
-                           "Priority": priority_menu, "Steps": new_steps_li}
+        full_plan_entry = {"Description": new_plan_box,
+                           "Plan_Type": draft_check_var,
+                           "Status": status_menu,
+                           "Priority": priority_menu,
+                           "Steps": new_steps_li}
         plan_li.append(full_plan_entry)
 
     def add_step_item(self, steps_container, steps_li):
@@ -394,6 +398,7 @@ class AddEntryPage(ttk.Frame):
         new_step_checkb = ttk.Checkbutton(
             new_step_row, variable=check_var,
             onvalue="Completed", offvalue="Incomplete")
+        check_var.set("Incomplete")
 
         new_step_checkb.pack(side=tk.LEFT)
 
@@ -537,6 +542,7 @@ class AddEntryPage(ttk.Frame):
                       goals=goals_li,
                       plans=plans_li,
                       affirmation=affirmation,
-                      additional_notes=additional_notes)
+                      additional_notes=additional_notes,
+                      test=True)
 
         self.root.switch_page(self.root._HomePage)

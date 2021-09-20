@@ -138,7 +138,7 @@ class SingleEntry(ttk.Frame):
         plans_container = ttk.Frame(self)
         plans_container.pack(side=tk.TOP, fill=tk.X, anchor='nw')
 
-        plans_df = match_plans(entry)
+        plans_df = match_plans(entry, test=TESTING)
 
         if plans_df is not None:
             for plan in plans_df.itertuples():
@@ -162,6 +162,8 @@ class SingleEntry(ttk.Frame):
             self.affirm_entry.insert(
                 'end', entry.Affirmation)
             self.affirm_entry.configure(state='disabled')
+            self.affirm_entry.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, anchor='nw',
+                                   padx=LARGE_PAD, pady=SMALL_PAD)
 
         """
         Note

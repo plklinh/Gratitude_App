@@ -15,6 +15,10 @@ from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></
 - Pencil:
 <div>Icons made by <a href="https://www.flaticon.com/authors/those-icons" title="Those Icons">Those Icons</a>
 from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+- Fullscreen:
+<div>Icons made by <a href="https://www.flaticon.com/authors/vectors-market" 
+title="Vectors Market">Vectors Market</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 """
 
 from Controller import *
@@ -38,6 +42,9 @@ from Pages.PlanAddPage import AddPlanPage
 class HomePage(ttk.Frame):
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
+
+        latest_log = get_latest_log(test=TESTING)
+        plans_df = get_latest_incomp_plans(test=TESTING)
 
         """
         Menu Pane
@@ -68,7 +75,6 @@ class HomePage(ttk.Frame):
 
         """List of Logs"""
 
-        latest_log = get_latest_log()
         self.test_entry = SingleEntry(
             self.logs_scrollframe.scrollable_frame, root,
             latest_log)
@@ -89,8 +95,6 @@ class HomePage(ttk.Frame):
         """
         List of Plans
         """
-
-        plans_df = get_latest_incomp_plans()
 
         self.plans_scrollframe = ScrollableFrame(self.plans_container)
 

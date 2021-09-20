@@ -11,20 +11,6 @@ conn.execute("DROP TABLE IF EXISTS Steps")
 
 sql = ''' CREATE TABLE IF NOT EXISTS Entries (
    Entry_ID PRIMARY KEY NOT NULL,
-   Date TIMESTAMP NOT NULL,
-   Entry_Type NOT NULL,
-   Gratitude,
-   Goals,
-   Plans,
-   Affirmation,
-   Additional_Notes
-)'''
-
-
-cursor.execute(sql)
-
-sql = ''' CREATE TABLE IF NOT EXISTS Entries (
-   Entry_ID PRIMARY KEY NOT NULL,
    Date NOT NULL,
    Entry_Type NOT NULL,
    Gratitude,
@@ -36,6 +22,7 @@ sql = ''' CREATE TABLE IF NOT EXISTS Entries (
 
 
 cursor.execute(sql)
+
 
 sql = ''' CREATE TABLE IF NOT EXISTS Plans (
    Plan_ID PRIMARY KEY NOT NULL,
@@ -87,17 +74,9 @@ conn = sqlite3.connect('Data/TestDatabase.db')
 
 cursor = conn.cursor()
 
-sql = ''' CREATE TABLE IF NOT EXISTS Entries (
-   Entry_ID PRIMARY KEY NOT NULL,
-   Date TIMESTAMP NOT NULL,
-   Entry_Type NOT NULL,
-   Gratitude,
-   Goals,
-   Plans,
-   Affirmation,
-   Additional_Notes
-)'''
-
+conn.execute("DROP TABLE IF EXISTS Entries")
+conn.execute("DROP TABLE IF EXISTS Plans")
+conn.execute("DROP TABLE IF EXISTS Steps")
 
 cursor.execute(sql)
 
@@ -138,6 +117,18 @@ sql = ''' CREATE TABLE IF NOT EXISTS Steps (
 
 cursor = conn.cursor()
 cursor.execute(sql)
+
+# Import Entries
+entries = pd.read_csv("Data/entries_df.csv")
+entries.to_sql("Entries", conn, if_exists='append', index=False)
+
+# Import Plans
+plans = pd.read_csv("Data/plans_df.csv")
+plans.to_sql("Plans", conn, if_exists='append', index=False)
+
+# Import Steps
+steps = pd.read_csv("Data/steps_df.csv")
+steps.to_sql("Steps", conn, if_exists='append', index=False)
 
 # Commit your changes in the database
 conn.commit()
