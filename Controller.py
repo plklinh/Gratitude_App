@@ -7,7 +7,7 @@ import sqlite3
 
 DB_FILE = "Data_personal/GratitudeDatabase.db"
 
-TEST_DB = "Data_personal/TestDatabase.db"
+TEST_DB = "Data/TestDatabase.db"
 
 ENTRY_TBL = "Entries"
 

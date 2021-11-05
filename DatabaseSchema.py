@@ -1,7 +1,7 @@
 import pandas as pd
 import sqlite3
 
-conn = sqlite3.connect('Data_personal/GratitudeDatabase.db')
+conn = sqlite3.connect('Data/TestDatabase.db')
 
 cursor = conn.cursor()
 
@@ -49,15 +49,15 @@ cursor = conn.cursor()
 cursor.execute(sql)
 
 # Import Entries
-entries = pd.read_csv("Data_personal/entries_df.csv")
+entries = pd.read_csv("Data/entries_df.csv")
 entries.to_sql("Entries", conn, if_exists='append', index=False)
 
 # Import Plans
-plans = pd.read_csv("Data_personal/plans_df.csv")
+plans = pd.read_csv("Data/plans_df.csv")
 plans.to_sql("Plans", conn, if_exists='append', index=False)
 
 # Import Steps
-steps = pd.read_csv("Data_personal/steps_df.csv")
+steps = pd.read_csv("Data/steps_df.csv")
 steps.to_sql("Steps", conn, if_exists='append', index=False)
 
 # Commit your changes in the database
@@ -70,7 +70,7 @@ conn.close()
 TEST DATABASE
 """
 
-conn = sqlite3.connect('Data_personal/TestDatabase.db')
+conn = sqlite3.connect('Data/TestDatabase.db')
 
 cursor = conn.cursor()
 
@@ -118,15 +118,15 @@ cursor = conn.cursor()
 cursor.execute(sql)
 
 # Import Entries
-entries = pd.read_csv("Data_personal/entries_df.csv")
+entries = pd.read_csv("Data/entries_df.csv")
 entries.to_sql("Entries", conn, if_exists='append', index=False)
 
 # Import Plans
-plans = pd.read_csv("Data_personal/plans_df.csv")
+plans = pd.read_csv("Data/plans_df.csv")
 plans.to_sql("Plans", conn, if_exists='append', index=False)
 
 # Import Steps
-steps = pd.read_csv("Data_personal/steps_df.csv")
+steps = pd.read_csv("Data/steps_df.csv")
 steps.to_sql("Steps", conn, if_exists='append', index=False)
 
 # Commit your changes in the database

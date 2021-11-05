@@ -1,1 +1,7 @@
 ﻿Plan_ID,Date_created,Plan_Type,Description,Num_Steps,Status,Priority,Date_completed
+P21080300,8/3/21,Log,Get opinion from friends,0,Scrapped,Low,
+P21080301,8/3/21,Log,Do initial research,0,Scrapped,Low,
+P21080302,8/3/21,Log,Write Daily to-do list,0,Scrapped,Low,
+P21080500,8/5/21,Log,Personal App Project phase I,2,Completed,Medium,8/17/21
+P21081000,8/10/21,Log,Put up skeleton for App,0,Completed,Low,8/17/21
+P21081001,8/10/21,Log,Finish sketch,0,Completed,Low,8/17/21
